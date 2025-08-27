@@ -445,6 +445,11 @@ async function handler(req: Request): Promise<Response> {
     }
   }
 
+  // Add this to your handler function
+  if (url.pathname === "/health") {
+    return new Response("OK", { status: 200 });
+  }
+
   const { host, slug, filepath } = parseRequest(url);
 
   // Check for static files in DATA_DIR directory first
@@ -525,8 +530,23 @@ function getContentType(filepath: string): string {
   return contentTypes[ext || ""] || "application/octet-stream";
 }
 
+// Add proper error handling and graceful shutdown
+Deno.addSignalListener("SIGTERM", () => {
+  console.log("Shutting down gracefully...");
+  Deno.exit(0);
+});
+
+Deno.addSignalListener("SIGINT", () => {
+  console.log("Shutting down gracefully...");
+  Deno.exit(0);
+});
+
 const port = parseInt(Deno.env.get("PORT") || "8000");
 console.log(`Server running on port ${port}`);
 console.log(`Default host: ${DEFAULT_HOST}`);
+console.log(" Server starting...");
+console.log("📁 DATA_DIR:", DATA_DIR);
+console.log("🌐 DEFAULT_HOST:", DEFAULT_HOST);
+console.log("🔑 Service account key:", HAS_SERVICE_ACCOUNT_KEY);
 
 Deno.serve({ port }, handler);

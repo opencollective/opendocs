@@ -2,7 +2,7 @@
 FROM denoland/deno:alpine-2.4.5
 
 # Install curl
-RUN apk add --no-cache curl
+RUN apk add --no-cache curl attr
 
 # Create app directory
 RUN mkdir -p /app
