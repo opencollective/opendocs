@@ -141,7 +141,6 @@ export function extractFooterSitemap(markdown: string) {
   const sitemap: Record<string, PathInfo> = {};
 
   const lines = markdown.split("\n");
-  console.log(">>> lines", lines.length);
   for (let line of lines) {
     const pathInfo: PathInfo = {
       path: "",

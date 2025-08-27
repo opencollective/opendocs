@@ -36,14 +36,6 @@ function parseRequest(url: URL): RequestContext {
     filepath += ".md";
   }
 
-  console.log(
-    ">>> parseRequest filepath",
-    filepath,
-    "host",
-    host,
-    "slug",
-    slug,
-  );
   return { host, slug, filepath };
 }
 
@@ -103,46 +95,6 @@ function createErrorPage(title: string, message: string): string {
         <a href="/" class="back-link">← Go back home</a>
     </div>
 </body>
-</html>`;
-}
-
-// Check presence of service account key at startup
-const SERVICE_ACCOUNT_KEY_PATH =
-  Deno.env.get("GOOGLE_SERVICE_ACCOUNT_KEY_PATH") || "service-account-key.json";
-const HAS_SERVICE_ACCOUNT_KEY = await Deno.stat(SERVICE_ACCOUNT_KEY_PATH)
-  .then(() => true)
-  .catch(() => false);
-
-function createMissingServiceAccountPage(): string {
-  return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Service Account Key Required</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; padding: 2rem; margin: 0; }
-    .container { background: #fff; max-width: 720px; margin: 0 auto; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,.1); }
-    h1 { color: #343a40; margin-bottom: .5rem; }
-    p { color: #6c757d; line-height: 1.6; }
-    ol { color: #6c757d; }
-    code { background: #f1f3f5; padding: .15rem .35rem; border-radius: 4px; }
-  </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>service-account-key.json is missing</h1>
-      <p>This server uses a Google Cloud service account for authentication. Place your JSON key file at <code>${SERVICE_ACCOUNT_KEY_PATH}</code>.</p>
-      <p>To create and download the key:</p>
-      <ol>
-        <li>Open Google Cloud Console → IAM & Admin → Service Accounts.</li>
-        <li>Create or select a service account. Grant it access to the Drive/Docs you need.</li>
-        <li>Go to Keys → Add key → Create new key → JSON, then download.</li>
-        <li>Save the file as <code>${SERVICE_ACCOUNT_KEY_PATH}</code> in this project root.</li>
-      </ol>
-    </div>
-  </body>
 </html>`;
 }
 
@@ -206,7 +158,7 @@ function generateFooterFromSitemap(sitemap: SitemapRecord): string {
 
   // Generate footer HTML
   let footerHtml = `
-    <footer class="footer bg-gray-900 dark:bg-black text-gray-300 dark:text-gray-400 mt-12 py-12 px-6 md:px-12 lg:px-24 w-full">
+    <footer class="footer bg-gray-900 dark:bg-black text-gray-300 dark:text-gray-400 py-12 px-6 md:px-12 lg:px-24 w-full">
       <div class="container max-w-[1200px] mx-auto">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">`;
 
@@ -408,13 +360,6 @@ async function handler(req: Request): Promise<Response> {
   const url = new URL(req.url);
 
   // If missing service account key, display helpful error for all routes except favicon
-  if (!HAS_SERVICE_ACCOUNT_KEY && url.pathname !== "/favicon.ico") {
-    const html = createMissingServiceAccountPage();
-    return new Response(html, {
-      status: 500,
-      headers: { "Content-Type": "text/html; charset=utf-8" },
-    });
-  }
 
   // Handle favicon and other common requests
   if (url.pathname === "/favicon.ico") {
@@ -547,6 +492,5 @@ console.log(`Default host: ${DEFAULT_HOST}`);
 console.log(" Server starting...");
 console.log("📁 DATA_DIR:", DATA_DIR);
 console.log("🌐 DEFAULT_HOST:", DEFAULT_HOST);
-console.log("🔑 Service account key:", HAS_SERVICE_ACCOUNT_KEY);
 
 Deno.serve({ port }, handler);
