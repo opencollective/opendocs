@@ -2,16 +2,35 @@ import { join } from "jsr:@std/path";
 import { getGoogleDocId } from "./googledoc.ts";
 import { SitemapEntry } from "./publishing.ts";
 
+const attributes: Record<string, string> = {};
+
+if (Deno.build.os === "darwin") {
+  attributes.comment = "com.apple.metadata:kMDItemComment";
+  attributes.url = "com.apple.metadata:kMDItemWhereFroms";
+} else {
+  attributes.comment = "user.comment";
+  attributes.url = "user.url";
+}
+
 export function setExtendedAttribute(
   filepath: string,
   key: string,
   value: string,
 ): void {
   try {
-    // Use xattr command on macOS/Linux
-    const command = new Deno.Command("xattr", {
-      args: ["-w", key, value, filepath],
-    });
+    let command: Deno.Command;
+
+    if (Deno.build.os === "darwin") {
+      // macOS: use xattr
+      command = new Deno.Command("xattr", {
+        args: ["-w", key, value, filepath],
+      });
+    } else {
+      // Linux: use setfattr
+      command = new Deno.Command("setfattr", {
+        args: ["-n", key, "-v", value, filepath],
+      });
+    }
 
     const { code, stderr } = command.outputSync();
     if (code !== 0) {
@@ -20,7 +39,6 @@ export function setExtendedAttribute(
     }
   } catch (error) {
     console.warn(`Could not set extended attribute ${key}:`, error);
-
     throw error;
   }
 }
@@ -29,11 +47,24 @@ export function getExtendedAttribute(
   filepath: string,
   key: string,
 ): string | null {
-  const command = new Deno.Command("xattr", {
-    args: ["-p", key, filepath],
-    stdout: "piped",
-    stderr: "piped",
-  });
+  let command: Deno.Command;
+
+  if (Deno.build.os === "darwin") {
+    // macOS: use xattr
+    command = new Deno.Command("xattr", {
+      args: ["-p", key, filepath],
+      stdout: "piped",
+      stderr: "piped",
+    });
+  } else {
+    // Linux: use getfattr
+    command = new Deno.Command("getfattr", {
+      args: ["-n", key, filepath],
+      stdout: "piped",
+      stderr: "piped",
+    });
+  }
+
   const { success, stdout } = command.outputSync();
   if (!success) {
     return null;
@@ -52,18 +83,10 @@ export function writeFileWithMetadata(
     Deno.writeFile(filepath, content);
   }
   if (metadata?.comment) {
-    setExtendedAttribute(
-      filepath,
-      "com.apple.metadata:kMDItemComment",
-      metadata.comment,
-    );
+    setExtendedAttribute(filepath, attributes.comment, metadata.comment);
   }
   if (metadata?.url) {
-    setExtendedAttribute(
-      filepath,
-      "com.apple.metadata:kMDItemWhereFroms",
-      metadata.url,
-    );
+    setExtendedAttribute(filepath, attributes.url, metadata.url);
   }
 }
 
@@ -74,10 +97,7 @@ export async function listFiles(filepath: string) {
       const fullPath = join(filepath, entry.name);
       const stat = Deno.statSync(fullPath);
       const mtime = stat.mtime;
-      const url = getExtendedAttribute(
-        fullPath,
-        "com.apple.metadata:kMDItemWhereFroms",
-      );
+      const url = getExtendedAttribute(fullPath, attributes.url);
       const googleDocId = url ? getGoogleDocId(url) : null;
       files.push({ name: entry.name, mtime, url, googleDocId });
     }

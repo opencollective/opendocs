@@ -46,8 +46,6 @@ Deno.test("Process markdown", async () => {
       await Deno.readTextFile(`./tests/fixtures/sitemap.json`),
     ) as Record<string, SitemapEntry>,
   });
-  console.log(">>> pageInfo", pageInfo);
-  console.log(">>> sitemap", footerSitemap);
   expect(footerSitemap["/socials/twitter"]).toBeDefined();
   expect(footerSitemap["/socials/twitter"].title).toBe("Twitter");
   expect(footerSitemap["/socials/twitter"].href).toBe("https://x.com/xdamman");

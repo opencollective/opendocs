@@ -1,10 +1,10 @@
 {
   "tasks": {
-    "sync": "deno run --allow-read --allow-run=xattr --allow-write --allow-run --allow-env --allow-net --env-file=.env src/sync.ts",
+    "sync": "deno run --allow-env --allow-read --allow-write --allow-net --allow-run --env-file=.env src/sync.ts",
     "serve": "deno run --allow-env --allow-read --allow-write --allow-net --env-file=.env src/server.ts",
-    "test": "deno test --allow-env --allow-run=xattr --allow-read --allow-write --allow-net --env-file=.env.test",
-    "build:css": "deno run --allow-read --allow-write --allow-run --allow-env npm:tailwindcss@^3.4.0 -i ./src/input.css -o ./dist/output.css --watch",
-    "build:css:prod": "deno run --allow-read --allow-write --allow-run --allow-env npm:tailwindcss@^3.4.0 -i ./src/input.css -o ./dist/output.css --minify"
+    "test": "deno test --allow-env --allow-read --allow-write --allow-net --allow-run --env-file=.env.test",
+    "build:css": "deno run --allow-env --allow-read --allow-write --allow-run npm:tailwindcss@^3.4.0 -i ./src/input.css -o ./dist/output.css --watch",
+    "build:css:prod": "deno run --allow-env --allow-read --allow-write --allow-run npm:tailwindcss@^3.4.0 -i ./src/input.css -o ./dist/output.css --minify"
   },
   "imports": {
     "@deno/gfm": "jsr:@deno/gfm@^0.11.0",

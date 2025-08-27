@@ -29,6 +29,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-deno-
 
+      - name: Install xattr support
+        run: |
+          # sudo apt-get update
+          sudo apt-get install -y attr
+
       - name: Run tests
         env:
           GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
