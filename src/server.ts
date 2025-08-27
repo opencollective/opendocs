@@ -1,5 +1,7 @@
 import { CSS, render } from "@deno/gfm";
 import { SitemapEntry } from "./lib/publishing.ts";
+import { join } from "jsr:@std/path";
+import { processMarkdown } from "./lib/markdown.ts";
 
 // Load environment variables
 const DEFAULT_HOST = Deno.env.get("DEFAULT_HOST") || "localhost";
@@ -28,7 +30,7 @@ function parseRequest(url: URL): RequestContext {
     slug = "index";
   }
 
-  let filepath = `${DATA_DIR}/${host}/${slug}`;
+  let filepath = join(DATA_DIR, host, slug);
   // If there is no extension, default to .md
   if (!slug.match(/\.[^.]+$/)) {
     filepath += ".md";
@@ -143,7 +145,6 @@ function createMissingServiceAccountPage(): string {
   </body>
 </html>`;
 }
-import { processMarkdown } from "./lib/markdown.ts";
 
 // Remove OAuth flow in favor of service account only
 
@@ -307,7 +308,7 @@ async function serveMarkdown(
 async function generateRSSFeed(host: string): Promise<Response> {
   try {
     const sitemap = JSON.parse(
-      await Deno.readTextFile(`${DATA_DIR}/${host}/sitemap.json`),
+      await Deno.readTextFile(join(DATA_DIR, host, "sitemap.json")),
     );
 
     // Convert sitemap to array and sort by customDate orptime (newest first)
@@ -329,7 +330,8 @@ async function generateRSSFeed(host: string): Promise<Response> {
       entries.map(async (entry) => {
         try {
           // Read the markdown file for this entry
-          const markdownPath = `${DATA_DIR}/${host}/${entry.slug}.md`;
+          const markdownPath = join(DATA_DIR, host, entry.slug, ".md");
+          console.log(">>> markdownPath", markdownPath);
           const markdown = await Deno.readTextFile(markdownPath);
 
           // Convert markdown to HTML for the description
@@ -428,7 +430,7 @@ async function handler(req: Request): Promise<Response> {
   // Handle CSS requests
   if (url.pathname === "/output.css") {
     try {
-      const cssContent = await Deno.readTextFile(`${DATA_DIR}/output.css`);
+      const cssContent = await Deno.readTextFile(join(DATA_DIR, "output.css"));
       return new Response(cssContent, {
         headers: {
           "Content-Type": "text/css; charset=utf-8",
@@ -446,14 +448,13 @@ async function handler(req: Request): Promise<Response> {
   const { host, slug, filepath } = parseRequest(url);
 
   // Check for static files in DATA_DIR directory first
-  const staticFilePath = `${DATA_DIR}${filepath}`;
+  const staticFilePath = filepath;
   try {
     const staticFileStat = await Deno.stat(staticFilePath);
     if (staticFileStat.isFile) {
       // Serve static file
       const fileContent = await Deno.readFile(staticFilePath);
       const contentType = getContentType(staticFilePath);
-      console.log(">>> contentType", contentType);
       if (contentType === "text/markdown") {
         // convert fileContent to string
         const fileTextContent = new TextDecoder().decode(fileContent);
@@ -466,7 +467,7 @@ async function handler(req: Request): Promise<Response> {
   } catch (error) {
     if (error instanceof Deno.errors.NotFound) {
       try {
-        await Deno.stat(`${DATA_DIR}/${host}`);
+        await Deno.stat(join(DATA_DIR, host));
         // Host exists but file doesn't - show file not found error
         const errorHtml = createErrorPage(
           "Page Not Found",
