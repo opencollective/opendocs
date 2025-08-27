@@ -30,10 +30,10 @@ jobs:
             ${{ runner.os }}-deno-
 
       - name: Run tests
+        env:
+          GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
         run: |
           echo "Running Deno tests..."
-          env
-            GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
           deno test --allow-read --allow-write --allow-env --allow-net --allow-run --coverage=coverage
 
   lint:
