@@ -2,7 +2,7 @@
   "tasks": {
     "sync": "deno run --allow-env --allow-read --allow-write --allow-net --allow-run --env-file=.env src/sync.ts",
     "serve": "deno run --allow-env --allow-read --allow-write --allow-net --env-file=.env src/server.ts",
-    "test": "deno test --allow-env --allow-read --allow-write --allow-net --allow-run --env-file=.env.test",
+    "test": "TZ=utc deno test --allow-env --allow-read --allow-write --allow-net --allow-run --env-file=.env.test",
     "build:css": "deno run --allow-env --allow-read --allow-write --allow-run npm:tailwindcss@^3.4.0 -i ./src/input.css -o ./dist/output.css --watch",
     "build:css:prod": "deno run --allow-env --allow-read --allow-write --allow-run npm:tailwindcss@^3.4.0 -i ./src/input.css -o ./dist/output.css --minify"
   },

@@ -36,6 +36,7 @@ jobs:
 
       - name: Run tests
         env:
+          TZ: utc
           GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
         run: |
           echo "Running Deno tests..."

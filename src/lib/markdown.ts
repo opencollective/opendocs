@@ -175,7 +175,6 @@ export function extractFooterSitemap(markdown: string) {
     }
 
     const matches = pathInfo.href.match(/^\[(.*)\]\((.*)\)$/);
-    console.log(">>> matches", matches);
     if (matches) {
       pathInfo.title = pathInfo.title || matches[1];
       pathInfo.href = matches[2];
