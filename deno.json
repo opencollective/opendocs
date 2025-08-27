@@ -4,7 +4,7 @@
     "serve": "deno run --allow-env --allow-read --allow-write --allow-net --env-file=.env src/server.ts",
     "test": "TZ=utc deno test --allow-env --allow-read --allow-write --allow-net --allow-run --env-file=.env.test",
     "build:css": "deno run --allow-env --allow-read --allow-write --allow-run npm:tailwindcss@^3.4.0 -i ./src/input.css -o ./dist/output.css --watch",
-    "build:css:prod": "deno run --allow-env --allow-read --allow-write --allow-run npm:tailwindcss@^3.4.0 -i ./src/input.css -o ./dist/output.css --minify"
+    "build:css:prod": "deno run --allow-env --allow-read --allow-write --allow-run --allow-ffi --allow-sys npm:tailwindcss@^3.4.0 -i ./src/input.css -o ./dist/output.css --minify"
   },
   "imports": {
     "@deno/gfm": "jsr:@deno/gfm@^0.11.0",
