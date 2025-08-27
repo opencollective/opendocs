@@ -35,7 +35,7 @@ export type DownloadedGoogleDoc = {
 export async function downloadGoogleDoc(
   auth: GoogleAuthObject,
   doc: GoogleDocMetadata,
-  downloadPath: string
+  downloadPath: string,
 ): Promise<DownloadedGoogleDoc | undefined> {
   const googleDocId = doc.id;
   if (!doc.ptime) {
@@ -45,7 +45,7 @@ export async function downloadGoogleDoc(
 
   console.log(
     ">>> processing",
-    `https://docs.google.com/document/d/${googleDocId}/edit`
+    `https://docs.google.com/document/d/${googleDocId}/edit`,
   );
   console.log("downloadGoogleDoc to", downloadPath);
   try {
@@ -75,7 +75,7 @@ export async function downloadGoogleDoc(
     images.set(
       `image${i + 1}`,
       data?.inlineObjects[inlineObjectId]?.inlineObjectProperties.embeddedObject
-        ?.imageProperties.contentUri || ""
+        ?.imageProperties.contentUri || "",
     );
   }
 
@@ -87,7 +87,7 @@ export async function downloadGoogleDoc(
     auth,
     googleDocId,
     join(downloadPath, slug + ".md"),
-    "markdown"
+    "markdown",
   );
   downloadedFiles.push(markdownFile);
   const res = await extractImagesFromMarkdown(markdownFile, slug, images);
@@ -96,7 +96,7 @@ export async function downloadGoogleDoc(
     auth,
     googleDocId,
     join(downloadPath, slug + ".pdf"),
-    "pdf"
+    "pdf",
   );
   downloadedFiles.push(pdfFile);
   const downloadedGoogleDoc = {
@@ -113,9 +113,10 @@ export async function downloadFormat(
   auth: GoogleAuthObject,
   googleDocId: string,
   filepath: string,
-  format: string
+  format: string,
 ): Promise<string> {
-  const exportUrl = `https://docs.google.com/feeds/download/documents/export/Export?id=${googleDocId}&exportFormat=${format}`;
+  const exportUrl =
+    `https://docs.google.com/feeds/download/documents/export/Export?id=${googleDocId}&exportFormat=${format}`;
   console.log(`Downloading ${exportUrl}`);
 
   const response = await fetch(exportUrl, {
@@ -151,7 +152,7 @@ export async function downloadFormat(
 
 export function getGoogleDocId(url: string) {
   const match = url.match(
-    /https:\/\/docs\.google\.com\/document\/d\/([a-zA-Z0-9_-]+)/
+    /https:\/\/docs\.google\.com\/document\/d\/([a-zA-Z0-9_-]+)/,
   );
   return match ? match[1] : null;
 }

@@ -43,7 +43,7 @@ Deno.test("Process markdown", async () => {
     host: "xavierdamman.com",
     slug: "index",
     sitemap: JSON.parse(
-      await Deno.readTextFile(`./tests/fixtures/sitemap.json`)
+      await Deno.readTextFile(`./tests/fixtures/sitemap.json`),
     ) as Record<string, SitemapEntry>,
   });
   console.log(">>> pageInfo", pageInfo);
@@ -55,21 +55,21 @@ Deno.test("Process markdown", async () => {
   expect(footerSitemap["/twitter"].hidden).toBeTruthy();
   expect(footerSitemap["/blog/2017/from-firms-to-collectives"]).toBeDefined();
   expect(footerSitemap["/blog/2017/from-firms-to-collectives"].title).toBe(
-    "From Firms to Collectives"
+    "From Firms to Collectives",
   );
   expect(footerSitemap["/blog/2017/from-firms-to-collectives"].href).toBe(
-    "/blog/2017/from-firms-to-collectives"
+    "/blog/2017/from-firms-to-collectives",
   );
   expect(
-    footerSitemap["/blog/2017/from-firms-to-collectives"].redirect
+    footerSitemap["/blog/2017/from-firms-to-collectives"].redirect,
   ).toBeUndefined();
   expect(
-    footerSitemap["/blog/2017/from-firms-to-collectives"].hidden
+    footerSitemap["/blog/2017/from-firms-to-collectives"].hidden,
   ).toBeTruthy();
 
   expect(footerSitemap["/projects/citizengarden"].hidden).toBeFalsy();
   expect(footerSitemap["/projects/citizengarden"].redirect).toBe(
-    "https://citizenspring.earth/citizengarden"
+    "https://citizenspring.earth/citizengarden",
   );
   expect(footerSitemap["/about"].hidden).toBeFalsy();
   expect(footerSitemap["/about"].redirect).toBeUndefined();

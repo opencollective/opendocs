@@ -1,5 +1,5 @@
 // import { Buffer } from "node:buffer";
-import { join, dirname, relative } from "jsr:@std/path";
+import { dirname, join, relative } from "jsr:@std/path";
 import { parse } from "npm:chrono-node";
 import { SitemapEntry } from "./publishing.ts";
 import { getGoogleDocId } from "./googledoc.ts";
@@ -36,14 +36,14 @@ export function extractDateText(text: string) {
 export async function extractImagesFromMarkdown(
   markdownFile: string,
   prefix: string,
-  images: Map<string, string>
+  images: Map<string, string>,
 ) {
   console.log(`Extracting images from ${markdownFile}`);
   const markdownContent = await Deno.readTextFile(markdownFile);
 
   // Extract date from first few lines
   const date = extractDateText(
-    markdownContent.split("\n").slice(0, 5).join("\n")
+    markdownContent.split("\n").slice(0, 5).join("\n"),
   );
 
   //  [image1]: <data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAloAAAFRCAYAAACsdAO0AACAAElEQVR4XmzcBXgV1/rw7dNzTilWnACBCDHiQtzd3d3d3QghCcHiJISQBEhwdylWSg1qVKlAC3XqUFooUOz3PXtz3r9875vrWtfsPXtm9sia9dzPmrXzj039q9g62M6OoS52jvSxa9M6Xjl9jNfPnmR1+0pGBteydnUXh/fv4aWTx9k1soG+lkZWVhbRXlFAX105/YsqWF1XRk9tKV3yvm1RNWtWtdLfsYr2ZS1kpyTi4WCDrbEBOrNmoD1hHGbTJmM/dzre+ur4GWhKUSPUSp/
@@ -94,10 +94,12 @@ export async function extractImagesFromMarkdown(
       console.log(`Image saved as ${imagePath}`);
       imagePaths.push(imagePath);
       // Update the markdown content to point to the saved image
-      const relativeImagePath = `./${relative(
-        dirname(markdownFile),
-        imagePath
-      )}`;
+      const relativeImagePath = `./${
+        relative(
+          dirname(markdownFile),
+          imagePath,
+        )
+      }`;
       updatedMarkdown = updatedMarkdown
         .replace(match[0], "")
         .replace(`![][${altText}]`, `![${altText}](${relativeImagePath})`);
@@ -199,22 +201,22 @@ export async function processMarkdown(
     host,
     slug,
     sitemap,
-  }: { host: string; slug: string; sitemap?: Record<string, SitemapEntry> }
+  }: { host: string; slug: string; sitemap?: Record<string, SitemapEntry> },
 ): Promise<{
   markdown: string;
   pageInfo: SitemapEntry;
   footerSitemap: Record<string, PathInfo>;
 }> {
-  const _sitemap =
-    sitemap ||
+  const _sitemap = sitemap ||
     (JSON.parse(
-      await Deno.readTextFile(`./dist/${host}/sitemap.json`)
+      await Deno.readTextFile(`./dist/${host}/sitemap.json`),
     ) as Record<string, SitemapEntry>);
   const sitemapEntryByGoogleDocId: Record<string, SitemapEntry> = {};
   Object.keys(_sitemap).forEach((key) => {
     sitemapEntryByGoogleDocId[_sitemap[key].googleDocId] = _sitemap[key];
-    sitemapEntryByGoogleDocId[_sitemap[key].googleDocId].slug =
-      key.substring(1);
+    sitemapEntryByGoogleDocId[_sitemap[key].googleDocId].slug = key.substring(
+      1,
+    );
   });
 
   const pageInfo = _sitemap[`/${slug}`];
@@ -232,7 +234,7 @@ export async function processMarkdown(
         }
       }
       return match;
-    }
+    },
   );
   let footerSitemap: Record<string, PathInfo> = {};
 

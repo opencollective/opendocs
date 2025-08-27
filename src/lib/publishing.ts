@@ -1,9 +1,9 @@
 import { join } from "jsr:@std/path";
 import {
   Folder,
-  listGoogleDocs,
-  listFolders,
   GoogleAuthObject,
+  listFolders,
+  listGoogleDocs,
 } from "./googleapi.ts";
 import { downloadGoogleDoc } from "./googledoc.ts";
 import { getSitemapEntryByGoogleDocId } from "./utils.ts";
@@ -33,7 +33,7 @@ export const publishDocsInFolder = async (
   auth: GoogleAuthObject,
   folder: Folder,
   basePath: string = "./dist",
-  sitemap: Record<urlpath, SitemapEntry> = {}
+  sitemap: Record<urlpath, SitemapEntry> = {},
 ) => {
   const folderPath = join(basePath, folder.name.replace(/\//g, "-"));
   console.log(">>> publishDocsInFolder", folderPath);
@@ -43,7 +43,7 @@ export const publishDocsInFolder = async (
     docsMetadata.map(async (docMetadata) => {
       const sitemapEntry = getSitemapEntryByGoogleDocId(
         sitemap,
-        docMetadata.id
+        docMetadata.id,
       );
 
       if (
@@ -67,13 +67,13 @@ export const publishDocsInFolder = async (
           files: res.files,
         };
       }
-    })
+    }),
   );
   const subFolders = await listFolders(auth, folder.id);
   await Promise.all(
     subFolders.map(async (subFolder) => {
       await publishDocsInFolder(auth, subFolder, folderPath, sitemap);
-    })
+    }),
   );
   return sitemap;
 };

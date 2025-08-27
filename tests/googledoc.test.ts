@@ -13,7 +13,7 @@ Deno.test("get shared folders", async () => {
   const folders = await listSharedFolders(auth);
   expect(folders.length).toBeGreaterThan(0);
   const folder = folders.find(
-    (folder) => folder.name === "test.blog.opencollective.xyz"
+    (folder) => folder.name === "test.blog.opencollective.xyz",
   );
   expect(folder).toBeDefined();
 });

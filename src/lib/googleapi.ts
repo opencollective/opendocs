@@ -52,22 +52,21 @@ type GoogleServiceAccountKey = {
 
 const GOOGLE_SERVICE_ACCOUNT_KEY = Deno.env.get("GOOGLE_SERVICE_ACCOUNT_KEY");
 const GOOGLE_SERVICE_ACCOUNT_KEY_PATH = Deno.env.get(
-  "GOOGLE_SERVICE_ACCOUNT_KEY_PATH"
+  "GOOGLE_SERVICE_ACCOUNT_KEY_PATH",
 );
 // Service Account only flow: we expect service-account-key.json to exist.
 
-const serviceAccountKeyString =
-  GOOGLE_SERVICE_ACCOUNT_KEY ||
+const serviceAccountKeyString = GOOGLE_SERVICE_ACCOUNT_KEY ||
   Deno.readTextFileSync(GOOGLE_SERVICE_ACCOUNT_KEY_PATH!);
 
 if (!serviceAccountKeyString) {
   throw new Error(
-    "Service account key not set. Please set the GOOGLE_SERVICE_ACCOUNT_KEY or GOOGLE_SERVICE_ACCOUNT_KEY_PATH environment variable."
+    "Service account key not set. Please set the GOOGLE_SERVICE_ACCOUNT_KEY or GOOGLE_SERVICE_ACCOUNT_KEY_PATH environment variable.",
   );
 }
 
 const serviceAccountKey = JSON.parse(
-  serviceAccountKeyString
+  serviceAccountKeyString,
 ) as GoogleServiceAccountKey;
 
 export const loadCredentials = (): GoogleCredentials => {
@@ -99,7 +98,7 @@ export const authorize = async (): Promise<GoogleAuthObject> => {
     serviceAccountKey.client_email || "",
     undefined,
     serviceAccountKey.private_key || "",
-    scopes
+    scopes,
   );
   await jwtClient.authorize();
   return jwtClient;
@@ -108,7 +107,7 @@ export const authorize = async (): Promise<GoogleAuthObject> => {
 // Function to get metadata of a specific file
 export const getFileMetadata = async (
   auth: GoogleAuthObject,
-  fileId: string
+  fileId: string,
 ) => {
   const drive = google.drive({ version: "v3", auth });
 
@@ -145,10 +144,10 @@ export const listFiles = async (auth: GoogleAuthObject, folderId: string) => {
             await getGoogleDocContributors(auth, file.id as string);
           } else {
             console.log(
-              `${file.name} (${file.id}, ${file.mimeType}, ${file.modifiedTime})`
+              `${file.name} (${file.id}, ${file.mimeType}, ${file.modifiedTime})`,
             );
           }
-        })
+        }),
       );
     } else {
       console.log("No files found.");
@@ -165,7 +164,7 @@ export type Folder = {
 };
 
 export async function listSharedFolders(
-  auth: GoogleAuthObject
+  auth: GoogleAuthObject,
 ): Promise<Folder[]> {
   const driveService = google.drive({ version: "v3", auth });
   const output: Folder[] = [];
@@ -195,7 +194,7 @@ export async function listSharedFolders(
 }
 export async function listFolders(
   auth: GoogleAuthObject,
-  folderId: string
+  folderId: string,
 ): Promise<Folder[]> {
   const driveService = google.drive({ version: "v3", auth });
   const output: Folder[] = [];
@@ -237,7 +236,7 @@ export type GoogleDocMetadata = {
 
 export async function listGoogleDocs(
   auth: GoogleAuthObject,
-  folderId: string
+  folderId: string,
 ): Promise<GoogleDocMetadata[]> {
   const driveService = google.drive({ version: "v3", auth });
   const output: GoogleDocMetadata[] = [];
@@ -257,7 +256,7 @@ export async function listGoogleDocs(
         files.map(async (file) => {
           const publishedTime = await getGoogleDocPublishedTime(
             auth,
-            file.id as string
+            file.id as string,
           );
           output.push({
             id: file.id as string,
@@ -271,7 +270,7 @@ export async function listGoogleDocs(
               avatar: file.owners?.[0]?.photoLink as string,
             },
           });
-        })
+        }),
       );
     } else {
       console.log("No files found.");
@@ -284,7 +283,7 @@ export async function listGoogleDocs(
 
 export const getGoogleDocContent = async (
   auth: GoogleAuthObject,
-  documentId: string
+  documentId: string,
 ): Promise<GoogleDocContent | null> => {
   const docs = google.docs({ version: "v1", auth });
 
@@ -306,7 +305,7 @@ export const getGoogleDocContent = async (
 
 export async function getGoogleDocContributors(
   auth: GoogleAuthObject,
-  googleDocId: string
+  googleDocId: string,
 ) {
   const driveService = google.drive({ version: "v3", auth });
 
@@ -342,7 +341,7 @@ export async function getGoogleDocContributors(
   } catch (error) {
     if (error instanceof Error && error.message.includes("403")) {
       console.log(
-        `>>> 403 error, insufficient permissions to get revisions for ${googleDocId}`
+        `>>> 403 error, insufficient permissions to get revisions for ${googleDocId}`,
       );
     } else {
       console.error("Error fetching revisions: ", error);
@@ -351,7 +350,7 @@ export async function getGoogleDocContributors(
 }
 export async function getGoogleDocPublishedTime(
   auth: GoogleAuthObject,
-  googleDocId: string
+  googleDocId: string,
 ): Promise<Date | undefined> {
   const driveService = google.drive({ version: "v3", auth });
 
@@ -377,7 +376,7 @@ export async function getGoogleDocPublishedTime(
   } catch (error) {
     if (error instanceof Error && error.message.includes("403")) {
       console.log(
-        `>>> 403 error, insufficient permissions to get revisions for ${googleDocId}`
+        `>>> 403 error, insufficient permissions to get revisions for ${googleDocId}`,
       );
     } else {
       console.error("Error fetching revisions: ", error);

@@ -5,7 +5,7 @@ import { SitemapEntry } from "./publishing.ts";
 export function setExtendedAttribute(
   filepath: string,
   key: string,
-  value: string
+  value: string,
 ): void {
   try {
     // Use xattr command on macOS/Linux
@@ -27,7 +27,7 @@ export function setExtendedAttribute(
 
 export function getExtendedAttribute(
   filepath: string,
-  key: string
+  key: string,
 ): string | null {
   const command = new Deno.Command("xattr", {
     args: ["-p", key, filepath],
@@ -44,7 +44,7 @@ export function getExtendedAttribute(
 export function writeFileWithMetadata(
   filepath: string,
   content: string | Uint8Array<ArrayBuffer>,
-  metadata?: { url?: string; comment?: string }
+  metadata?: { url?: string; comment?: string },
 ) {
   if (typeof content === "string") {
     Deno.writeTextFile(filepath, content);
@@ -55,14 +55,14 @@ export function writeFileWithMetadata(
     setExtendedAttribute(
       filepath,
       "com.apple.metadata:kMDItemComment",
-      metadata.comment
+      metadata.comment,
     );
   }
   if (metadata?.url) {
     setExtendedAttribute(
       filepath,
       "com.apple.metadata:kMDItemWhereFroms",
-      metadata.url
+      metadata.url,
     );
   }
 }
@@ -76,7 +76,7 @@ export async function listFiles(filepath: string) {
       const mtime = stat.mtime;
       const url = getExtendedAttribute(
         fullPath,
-        "com.apple.metadata:kMDItemWhereFroms"
+        "com.apple.metadata:kMDItemWhereFroms",
       );
       const googleDocId = url ? getGoogleDocId(url) : null;
       files.push({ name: entry.name, mtime, url, googleDocId });
@@ -87,16 +87,16 @@ export async function listFiles(filepath: string) {
 
 export function getSitemapEntryByGoogleDocId(
   sitemap: Record<string, SitemapEntry>,
-  googleDocId: string
+  googleDocId: string,
 ) {
   return Object.values(sitemap).find(
-    (entry) => entry.googleDocId === googleDocId
+    (entry) => entry.googleDocId === googleDocId,
   );
 }
 
 export function updateSitemapForHost(
   host: string,
-  sitemap: Record<string, SitemapEntry>
+  sitemap: Record<string, SitemapEntry>,
 ) {
   const sitemapPath = `./dist/${host}/sitemap.json`;
 

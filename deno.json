@@ -10,5 +10,11 @@
     "@deno/gfm": "jsr:@deno/gfm@^0.11.0",
     "googleapis": "npm:googleapis",
     "tailwindcss": "npm:tailwindcss@^3.4.0"
+  },
+  "fmt": {
+    "exclude": [
+      "**/*.md",
+      "**/*.json"
+    ]
   }
 }

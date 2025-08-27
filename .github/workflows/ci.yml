@@ -32,6 +32,7 @@ jobs:
       - name: Run tests
         run: |
           echo "Running Deno tests..."
+          echo "TEST_SECRET: ${{ secrets.TEST_SECRET }}"
           deno test --allow-read --allow-write --allow-env --allow-net --allow-run --coverage=coverage
           env
             GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}

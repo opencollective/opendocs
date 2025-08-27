@@ -43,8 +43,7 @@ const Footer = ({ googleDocId, sitemap, websiteTitle, websiteIcon }) => {
       } else {
         columns[slug].title = page.title;
       }
-      columns[slug].icon =
-        page.svgicon ||
+      columns[slug].icon = page.svgicon ||
         page.icon ||
         page.favicon ||
         (websiteIcon && websiteIcon.src);
@@ -67,7 +66,9 @@ const Footer = ({ googleDocId, sitemap, websiteTitle, websiteIcon }) => {
   if (googleDocId !== columns["index"].googleDocId) {
     columns["contribute"].pages.push({
       title: (sitemap.edit && sitemap.edit.description) || "Edit this website",
-      href: `https://docs.google.com/document/d/${columns["index"].googleDocId}/edit`,
+      href: `https://docs.google.com/document/d/${
+        columns["index"].googleDocId
+      }/edit`,
     });
   }
 
@@ -99,7 +100,7 @@ const Footer = ({ googleDocId, sitemap, websiteTitle, websiteIcon }) => {
                 columns[c].pages &&
                 columns[c].pages.length > 0 &&
                 columns[c].title &&
-                columns[c].title.length < 30
+                columns[c].title.length < 30,
             )
             .map((colName) => (
               <div

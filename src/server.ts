@@ -39,7 +39,7 @@ function parseRequest(url: URL): RequestContext {
     "host",
     host,
     "slug",
-    slug
+    slug,
   );
   return { host, slug, filepath };
 }
@@ -195,7 +195,7 @@ function generateFooterFromSitemap(sitemap: SitemapRecord): string {
 
   // Filter out empty sections
   const nonEmptySections = Object.entries(sections).filter(
-    ([_, pages]) => pages.length > 0
+    ([_, pages]) => pages.length > 0,
   );
 
   if (nonEmptySections.length === 0) {
@@ -213,15 +213,17 @@ function generateFooterFromSitemap(sitemap: SitemapRecord): string {
           <div class="footer-section">
             <h2 class="text-lg font-semibold text-white dark:text-gray-100 mb-4 capitalize">${sectionName}</h2>
             <ul class="space-y-2">
-              ${pages
-                .map(
-                  (page) => `
+              ${
+      pages
+        .map(
+          (page) => `
                 <li>
                   <a class="text-sm text-gray-300 dark:text-gray-400 hover:text-white dark:hover:text-gray-100 transition-colors duration-200" href="${page.href}">${page.title}</a>
                 </li>
-              `
-                )
-                .join("")}
+              `,
+        )
+        .join("")
+    }
             </ul>
           </div>`;
   }
@@ -237,7 +239,7 @@ function generateFooterFromSitemap(sitemap: SitemapRecord): string {
 async function serveMarkdown(
   markdownText: string,
   host: string,
-  slug: string
+  slug: string,
 ): Promise<Response> {
   try {
     const { markdown, pageInfo, footerSitemap } = await processMarkdown(
@@ -245,7 +247,7 @@ async function serveMarkdown(
       {
         host,
         slug,
-      }
+      },
     );
 
     // Convert markdown to HTML using the markdown library
@@ -304,7 +306,7 @@ async function serveMarkdown(
 async function generateRSSFeed(host: string): Promise<Response> {
   try {
     const sitemap = JSON.parse(
-      await Deno.readTextFile(`./dist/${host}/sitemap.json`)
+      await Deno.readTextFile(`./dist/${host}/sitemap.json`),
     );
 
     // Convert sitemap to array and sort by customDate orptime (newest first)
@@ -353,7 +355,7 @@ async function generateRSSFeed(host: string): Promise<Response> {
             title: entry.title || entry.slug,
           };
         }
-      })
+      }),
     );
 
     const rssContent = `<?xml version="1.0" encoding="UTF-8"?>
@@ -365,21 +367,25 @@ async function generateRSSFeed(host: string): Promise<Response> {
     <language>en</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <atom:link href="https://${host}/feed.xml" rel="self" type="application/rss+xml"/>
-    ${processedEntries
-      .map(
-        (entry) => `
+    ${
+      processedEntries
+        .map(
+          (entry) => `
     <item>
       <title>${entry.title}</title>
       <link>https://${host}/${entry.slug}</link>
       <guid>https://${host}/${entry.slug}</guid>
-      <pubDate>${new Date(
-        entry.customDate ?? entry.ptime
-      ).toUTCString()}</pubDate>
+      <pubDate>${
+            new Date(
+              entry.customDate ?? entry.ptime,
+            ).toUTCString()
+          }</pubDate>
       <description><![CDATA[${entry.fullContent}]]></description>
       <content:encoded><![CDATA[${entry.fullContent}]]></content:encoded>
-    </item>`
-      )
-      .join("")}
+    </item>`,
+        )
+        .join("")
+    }
   </channel>
 </rss>`;
 
@@ -463,7 +469,7 @@ async function handler(req: Request): Promise<Response> {
         // Host exists but file doesn't - show file not found error
         const errorHtml = createErrorPage(
           "Page Not Found",
-          `The page "${slug}" was not found on ${host}.`
+          `The page "${slug}" was not found on ${host}.`,
         );
         return new Response(errorHtml, {
           status: 404,
@@ -473,7 +479,7 @@ async function handler(req: Request): Promise<Response> {
         // Host directory doesn't exist - show host not found error
         const errorHtml = createErrorPage(
           "Host Not Found",
-          `The host "${host}" was not found. Please check the URL or contact the administrator.`
+          `The host "${host}" was not found. Please check the URL or contact the administrator.`,
         );
         return new Response(errorHtml, {
           status: 404,
@@ -487,7 +493,7 @@ async function handler(req: Request): Promise<Response> {
   // Fallback 404 if nothing matched above
   const errorHtml = createErrorPage(
     "Not Found",
-    `The requested resource at "${url.pathname}" was not found.`
+    `The requested resource at "${url.pathname}" was not found.`,
   );
   return new Response(errorHtml, {
     status: 404,

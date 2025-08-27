@@ -12,12 +12,12 @@ const main = async () => {
       console.log(
         "Publishing",
         folder.name,
-        `(https://drive.google.com/drive/u/0/folders/${folder.id})`
+        `(https://drive.google.com/drive/u/0/folders/${folder.id})`,
       );
       let existingSitemap: Record<string, SitemapEntry> = {};
       try {
         const sitemapText = await Deno.readTextFile(
-          `./dist/${folder.name}/sitemap.json`
+          `./dist/${folder.name}/sitemap.json`,
         );
         existingSitemap = JSON.parse(sitemapText) as Record<
           string,
@@ -30,7 +30,7 @@ const main = async () => {
         auth,
         folder,
         "./dist",
-        existingSitemap
+        existingSitemap,
       );
       updateSitemapForHost(folder.name, sitemap);
     });
