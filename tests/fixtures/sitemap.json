@@ -1,0 +1,336 @@
+{
+  "/videos": {
+    "googleDocId": "1zDb8M3Bdyl8mXOwfVrGEeVK57SI2hxpdgaDuM3queL0",
+    "slug": "videos",
+    "src": "https://docs.google.com/document/d/1zDb8M3Bdyl8mXOwfVrGEeVK57SI2hxpdgaDuM3queL0/edit?usp=drivesdk",
+    "ctime": "2024-03-05T13:19:07.863Z",
+    "mtime": "2025-08-20T13:30:19.963Z",
+    "ptime": "2025-05-03T14:34:02.775Z",
+    "title": "videos",
+    "files": [
+      "dist/xavierdamman.com/videos.md",
+      "dist/xavierdamman.com/videos.pdf"
+    ]
+  },
+  "/about": {
+    "googleDocId": "1x1mxg2vWwECHjt5rdY09cwxZos8vEJ0OH98c3bnNaCA",
+    "slug": "about",
+    "src": "https://docs.google.com/document/d/1x1mxg2vWwECHjt5rdY09cwxZos8vEJ0OH98c3bnNaCA/edit?usp=drivesdk",
+    "ctime": "2024-10-12T18:47:01.627Z",
+    "mtime": "2025-08-17T18:14:14.562Z",
+    "ptime": "2025-08-16T21:15:11.447Z",
+    "title": "about",
+    "files": [
+      "dist/xavierdamman.com/about.md",
+      "dist/xavierdamman.com/about.pdf"
+    ]
+  },
+  "/index": {
+    "googleDocId": "1GbUmVMiGBLu6EcQRhLlUi8B_p8OrnxS_AIAXwiogbXs",
+    "slug": "index",
+    "src": "https://docs.google.com/document/d/1GbUmVMiGBLu6EcQRhLlUi8B_p8OrnxS_AIAXwiogbXs/edit?usp=drivesdk",
+    "ctime": "2024-03-04T16:17:21.992Z",
+    "mtime": "2025-08-17T18:19:41.266Z",
+    "ptime": "2025-08-16T16:19:05.716Z",
+    "title": "index",
+    "files": [
+      "dist/xavierdamman.com/index.md",
+      "dist/xavierdamman.com/images/index_image1.png",
+      "dist/xavierdamman.com/index.pdf"
+    ]
+  },
+  "/blog/2017/the-blind-spot-of-silicon-valley": {
+    "googleDocId": "1fRjGcHzUnsVTjfvdoPbUpZUNkm8pijSg5aV61nUpjKQ",
+    "slug": "the-blind-spot-of-silicon-valley",
+    "src": "https://docs.google.com/document/d/1fRjGcHzUnsVTjfvdoPbUpZUNkm8pijSg5aV61nUpjKQ/edit?usp=drivesdk",
+    "ctime": "2024-12-07T14:31:31.623Z",
+    "mtime": "2024-12-07T14:37:06.891Z",
+    "ptime": "2024-12-07T14:37:06.788Z",
+    "customDate": "2017-05-07T10:00:00.000Z",
+    "title": "The blind spot of Silicon Valley",
+    "files": [
+      "dist/xavierdamman.com/blog/2017/the-blind-spot-of-silicon-valley.md",
+      "dist/xavierdamman.com/blog/2017/the-blind-spot-of-silicon-valley.pdf"
+    ]
+  },
+  "/blog/2017/unbundling-the-united-states": {
+    "googleDocId": "1SFGQbS2tFhZQU_EAqEkdPChbNIrsQI1IVyQsZop1rX0",
+    "slug": "unbundling-the-united-states",
+    "src": "https://docs.google.com/document/d/1SFGQbS2tFhZQU_EAqEkdPChbNIrsQI1IVyQsZop1rX0/edit?usp=drivesdk",
+    "ctime": "2024-12-07T14:49:41.649Z",
+    "mtime": "2024-12-07T14:55:49.798Z",
+    "ptime": "2024-12-07T14:55:49.723Z",
+    "customDate": "2017-02-11T11:00:00.000Z",
+    "title": "Unbundling the United States",
+    "files": [
+      "dist/xavierdamman.com/blog/2017/unbundling-the-united-states.md",
+      "dist/xavierdamman.com/blog/2017/unbundling-the-united-states.pdf"
+    ]
+  },
+  "/blog/2015/a-new-form-of-association-for-the-internet-generation-—-part-2": {
+    "googleDocId": "1wP6PROx2AgtV7VDdUYDD6oQiCtSW4R8BOplAbt7PyDw",
+    "slug": "a-new-form-of-association-for-the-internet-generation-—-part-2",
+    "src": "https://docs.google.com/document/d/1wP6PROx2AgtV7VDdUYDD6oQiCtSW4R8BOplAbt7PyDw/edit?usp=drivesdk",
+    "ctime": "2024-10-14T14:39:43.059Z",
+    "mtime": "2024-10-14T14:40:09.884Z",
+    "ptime": "2024-10-14T14:40:06.439Z",
+    "customDate": "2015-12-30T11:00:00.000Z",
+    "title": "A New Form of Association for the Internet Generation — part 2",
+    "files": [
+      "dist/xavierdamman.com/blog/2015/a-new-form-of-association-for-the-internet-generation-—-part-2.md",
+      "dist/xavierdamman.com/blog/2015/a-new-form-of-association-for-the-internet-generation-—-part-2.pdf"
+    ]
+  },
+  "/blog/2016/playing-the-long-game": {
+    "googleDocId": "1DHq5SBGrsV1npOizUKmer3mfRrwnYFVpl4e2XeaP_No",
+    "slug": "playing-the-long-game",
+    "src": "https://docs.google.com/document/d/1DHq5SBGrsV1npOizUKmer3mfRrwnYFVpl4e2XeaP_No/edit?usp=drivesdk",
+    "ctime": "2024-10-14T14:36:13.772Z",
+    "mtime": "2024-10-17T20:03:55.070Z",
+    "ptime": "2024-10-17T20:03:55.033Z",
+    "customDate": "2016-01-26T11:00:00.000Z",
+    "title": "Playing the Long Game",
+    "files": [
+      "dist/xavierdamman.com/blog/2016/playing-the-long-game.md",
+      "dist/xavierdamman.com/blog/2016/images/playing-the-long-game_image1.png",
+      "dist/xavierdamman.com/blog/2016/playing-the-long-game.pdf"
+    ]
+  },
+  "/blog/2024/a-new-chapter-for-open-collective-digital-cooperatives": {
+    "googleDocId": "1M0vnjri84AhfiqpaLmkWrey_QwSPEFhWReR3JmEwvD8",
+    "slug": "a-new-chapter-for-open-collective-digital-cooperatives",
+    "src": "https://docs.google.com/document/d/1M0vnjri84AhfiqpaLmkWrey_QwSPEFhWReR3JmEwvD8/edit?usp=drivesdk",
+    "ctime": "2024-10-12T12:45:42.621Z",
+    "mtime": "2024-10-18T16:27:41.027Z",
+    "ptime": "2024-10-18T16:27:40.991Z",
+    "customDate": "2024-10-12T10:00:00.000Z",
+    "title": "A New Chapter for Open Collective: Digital Cooperatives",
+    "files": [
+      "dist/xavierdamman.com/blog/2024/a-new-chapter-for-open-collective-digital-cooperatives.md",
+      "dist/xavierdamman.com/blog/2024/a-new-chapter-for-open-collective-digital-cooperatives.pdf"
+    ]
+  },
+  "/blog/2015/a-new-form-of-association-for-the-internet-generation-—-part-1": {
+    "googleDocId": "1nB_HlbaST2TBYyinxZLKcz0dwjGLi0uKkeKhLxeEpw8",
+    "slug": "a-new-form-of-association-for-the-internet-generation-—-part-1",
+    "src": "https://docs.google.com/document/d/1nB_HlbaST2TBYyinxZLKcz0dwjGLi0uKkeKhLxeEpw8/edit?usp=drivesdk",
+    "ctime": "2024-10-14T14:38:45.142Z",
+    "mtime": "2024-10-14T14:39:06.545Z",
+    "ptime": "2024-10-14T14:39:06.491Z",
+    "customDate": "2015-09-01T10:00:00.000Z",
+    "title": "A New Form of Association for the Internet Generation — part 1",
+    "files": [
+      "dist/xavierdamman.com/blog/2015/a-new-form-of-association-for-the-internet-generation-—-part-1.md",
+      "dist/xavierdamman.com/blog/2015/images/a-new-form-of-association-for-the-internet-generation-—-part-1_image1.png",
+      "dist/xavierdamman.com/blog/2015/a-new-form-of-association-for-the-internet-generation-—-part-1.pdf"
+    ]
+  },
+  "/blog/2025/about-inequalities": {
+    "googleDocId": "1-3zMlg4YOyegGjnqisD6nI-5Fn4_-g6Xp8NALTPxvpo",
+    "slug": "about-inequalities",
+    "src": "https://docs.google.com/document/d/1-3zMlg4YOyegGjnqisD6nI-5Fn4_-g6Xp8NALTPxvpo/edit?usp=drivesdk",
+    "ctime": "2025-01-18T15:29:15.809Z",
+    "mtime": "2025-02-06T20:09:02.732Z",
+    "ptime": "2025-02-06T12:58:37.119Z",
+    "title": "About inequalities",
+    "files": [
+      "dist/xavierdamman.com/blog/2025/about-inequalities.md",
+      "dist/xavierdamman.com/blog/2025/about-inequalities.pdf"
+    ]
+  },
+  "/blog/2017/from-firms-to-collectives": {
+    "googleDocId": "16Q_XMJDzoDy3XJcalSB0g4Np98gQMMAfu64Pik5ZCgQ",
+    "slug": "from-firms-to-collectives",
+    "src": "https://docs.google.com/document/d/16Q_XMJDzoDy3XJcalSB0g4Np98gQMMAfu64Pik5ZCgQ/edit?usp=drivesdk",
+    "ctime": "2024-10-14T14:33:11.369Z",
+    "mtime": "2024-10-14T14:33:44.586Z",
+    "ptime": "2024-10-14T14:33:41.094Z",
+    "customDate": "2017-01-30T11:00:00.000Z",
+    "title": "From Firms to Collectives",
+    "files": [
+      "dist/xavierdamman.com/blog/2017/from-firms-to-collectives.md",
+      "dist/xavierdamman.com/blog/2017/images/from-firms-to-collectives_image1.png",
+      "dist/xavierdamman.com/blog/2017/from-firms-to-collectives.pdf"
+    ]
+  },
+  "/blog/2016/money-and-open-source-communities": {
+    "googleDocId": "1O6tKnIgLV5SuO6f6r7coiqWS1b_5CQSBN4Pi5GVyXxw",
+    "slug": "money-and-open-source-communities",
+    "src": "https://docs.google.com/document/d/1O6tKnIgLV5SuO6f6r7coiqWS1b_5CQSBN4Pi5GVyXxw/edit?usp=drivesdk",
+    "ctime": "2024-10-14T14:37:28.788Z",
+    "mtime": "2024-10-14T14:37:57.764Z",
+    "ptime": "2024-10-14T14:37:55.899Z",
+    "customDate": "2016-06-29T10:00:00.000Z",
+    "title": "Money and Open Source Communities",
+    "files": [
+      "dist/xavierdamman.com/blog/2016/money-and-open-source-communities.md",
+      "dist/xavierdamman.com/blog/2016/images/money-and-open-source-communities_image1.png",
+      "dist/xavierdamman.com/blog/2016/money-and-open-source-communities.pdf"
+    ]
+  },
+  "/blog/2023/manifesto-to-operate-our-city-as-a-dao": {
+    "googleDocId": "1NG6watiAGqd4jY1ymxbNAW8UF9PknQQJw-8wriXmbDY",
+    "slug": "manifesto-to-operate-our-city-as-a-dao",
+    "src": "https://docs.google.com/document/d/1NG6watiAGqd4jY1ymxbNAW8UF9PknQQJw-8wriXmbDY/edit?usp=drivesdk",
+    "ctime": "2024-12-07T15:03:18.883Z",
+    "mtime": "2024-12-07T15:04:58.079Z",
+    "ptime": "2024-12-07T15:04:58.004Z",
+    "customDate": "2023-12-01T11:00:00.000Z",
+    "title": "Manifesto to operate our city as a DAO",
+    "files": [
+      "dist/xavierdamman.com/blog/2023/manifesto-to-operate-our-city-as-a-dao.md",
+      "dist/xavierdamman.com/blog/2023/manifesto-to-operate-our-city-as-a-dao.pdf"
+    ]
+  },
+  "/blog/2025/happy-new-year-from-open-collective-inc": {
+    "googleDocId": "1QvAmd1JN2n0MstM06UPtrQEEOyJV34jkcyhxlTFJ4OM",
+    "slug": "happy-new-year-from-open-collective-inc",
+    "src": "https://docs.google.com/document/d/1QvAmd1JN2n0MstM06UPtrQEEOyJV34jkcyhxlTFJ4OM/edit?usp=drivesdk",
+    "ctime": "2025-01-02T20:41:50.671Z",
+    "mtime": "2025-02-06T20:11:24.960Z",
+    "ptime": "2025-02-06T20:11:24.867Z",
+    "customDate": "2025-01-01T11:00:00.000Z",
+    "title": "Happy new year from Open Collective Inc",
+    "files": [
+      "dist/xavierdamman.com/blog/2025/happy-new-year-from-open-collective-inc.md",
+      "dist/xavierdamman.com/blog/2025/images/happy-new-year-from-open-collective-inc_image1.png",
+      "dist/xavierdamman.com/blog/2025/images/happy-new-year-from-open-collective-inc_image2.png",
+      "dist/xavierdamman.com/blog/2025/happy-new-year-from-open-collective-inc.pdf"
+    ]
+  },
+  "/blog/2015/vipassana-my-10-day-meditation-retreat-in-silence": {
+    "googleDocId": "17JPxtFchF9y8U3bcIki82sQhFWJ2uWIgDqZ_sVJra2c",
+    "slug": "vipassana-my-10-day-meditation-retreat-in-silence",
+    "src": "https://docs.google.com/document/d/17JPxtFchF9y8U3bcIki82sQhFWJ2uWIgDqZ_sVJra2c/edit?usp=drivesdk",
+    "ctime": "2024-10-14T14:08:13.813Z",
+    "mtime": "2024-10-17T19:56:42.715Z",
+    "ptime": "2024-10-17T19:56:42.686Z",
+    "customDate": "2015-05-04T10:00:00.000Z",
+    "title": "Vipassana: My 10-day Meditation Retreat in Silence",
+    "files": [
+      "dist/xavierdamman.com/blog/2015/vipassana-my-10-day-meditation-retreat-in-silence.md",
+      "dist/xavierdamman.com/blog/2015/images/vipassana-my-10-day-meditation-retreat-in-silence_image1.png",
+      "dist/xavierdamman.com/blog/2015/images/vipassana-my-10-day-meditation-retreat-in-silence_image2.png",
+      "dist/xavierdamman.com/blog/2015/images/vipassana-my-10-day-meditation-retreat-in-silence_image3.png",
+      "dist/xavierdamman.com/blog/2015/images/vipassana-my-10-day-meditation-retreat-in-silence_image4.png",
+      "dist/xavierdamman.com/blog/2015/vipassana-my-10-day-meditation-retreat-in-silence.pdf"
+    ]
+  },
+  "/blog/2025/on-why-a-single-currency-destroys-local-communities": {
+    "googleDocId": "1AwKioC2G9_88Q5u1l1F21n3ePU6h1v-EMGN9aCHdPgI",
+    "slug": "on-why-a-single-currency-destroys-local-communities",
+    "src": "https://docs.google.com/document/d/1AwKioC2G9_88Q5u1l1F21n3ePU6h1v-EMGN9aCHdPgI/edit?usp=drivesdk",
+    "ctime": "2025-08-06T13:46:09.309Z",
+    "mtime": "2025-08-06T17:42:14.965Z",
+    "ptime": "2025-08-06T17:42:14.908Z",
+    "customDate": "2025-08-20T14:51:17.221Z",
+    "title": "On why a single currency destroys local communities",
+    "files": [
+      "dist/xavierdamman.com/blog/2025/on-why-a-single-currency-destroys-local-communities.md",
+      "dist/xavierdamman.com/blog/2025/images/on-why-a-single-currency-destroys-local-communities_image1.png",
+      "dist/xavierdamman.com/blog/2025/images/on-why-a-single-currency-destroys-local-communities_image2.png",
+      "dist/xavierdamman.com/blog/2025/on-why-a-single-currency-destroys-local-communities.pdf"
+    ]
+  },
+  "/blog/2016/a-new-way-to-fund-open-source-projects": {
+    "googleDocId": "1Ve_Mg0_Zj9fKSTvQODRUALqvFtiX9xq2ZMzbPytZrgc",
+    "slug": "a-new-way-to-fund-open-source-projects",
+    "src": "https://docs.google.com/document/d/1Ve_Mg0_Zj9fKSTvQODRUALqvFtiX9xq2ZMzbPytZrgc/edit?usp=drivesdk",
+    "ctime": "2024-10-14T14:29:26.888Z",
+    "mtime": "2024-10-14T14:30:30.521Z",
+    "ptime": "2024-10-14T14:30:30.477Z",
+    "customDate": "2016-02-21T11:00:00.000Z",
+    "title": "A New Way to Fund Open Source Projects",
+    "files": [
+      "dist/xavierdamman.com/blog/2016/a-new-way-to-fund-open-source-projects.md",
+      "dist/xavierdamman.com/blog/2016/images/a-new-way-to-fund-open-source-projects_image1.png",
+      "dist/xavierdamman.com/blog/2016/images/a-new-way-to-fund-open-source-projects_image2.png",
+      "dist/xavierdamman.com/blog/2016/images/a-new-way-to-fund-open-source-projects_image3.png",
+      "dist/xavierdamman.com/blog/2016/a-new-way-to-fund-open-source-projects.pdf"
+    ]
+  },
+  "/blog/2024/falling-out-of-love-with-apple": {
+    "googleDocId": "1R4ixBrU0HJ8f30te-O31AMzp7kujF7qcGfZKO74K0og",
+    "slug": "falling-out-of-love-with-apple",
+    "src": "https://docs.google.com/document/d/1R4ixBrU0HJ8f30te-O31AMzp7kujF7qcGfZKO74K0og/edit?usp=drivesdk",
+    "ctime": "2024-12-07T13:57:35.651Z",
+    "mtime": "2024-12-07T14:28:20.572Z",
+    "ptime": "2024-12-07T14:28:20.552Z",
+    "customDate": "2024-10-05T10:00:00.000Z",
+    "title": "Falling out of love with apple",
+    "files": [
+      "dist/xavierdamman.com/blog/2024/falling-out-of-love-with-apple.md",
+      "dist/xavierdamman.com/blog/2024/images/falling-out-of-love-with-apple_image1.png",
+      "dist/xavierdamman.com/blog/2024/images/falling-out-of-love-with-apple_image2.png",
+      "dist/xavierdamman.com/blog/2024/images/falling-out-of-love-with-apple_image3.png",
+      "dist/xavierdamman.com/blog/2024/images/falling-out-of-love-with-apple_image4.png",
+      "dist/xavierdamman.com/blog/2024/falling-out-of-love-with-apple.pdf"
+    ]
+  },
+  "/blog/2025/open-collective-investors-update-spring-2025": {
+    "googleDocId": "1M8bBMuiA5kVgxQIKycz41JsIxzZzMMnKFNjb4pZOkE0",
+    "slug": "open-collective-investors-update-spring-2025",
+    "src": "https://docs.google.com/document/d/1M8bBMuiA5kVgxQIKycz41JsIxzZzMMnKFNjb4pZOkE0/edit?usp=drivesdk",
+    "ctime": "2025-03-31T07:52:51.704Z",
+    "mtime": "2025-04-29T15:48:18.648Z",
+    "ptime": "2025-04-15T14:32:31.421Z",
+    "title": "Open Collective Investors Update Spring 2025",
+    "files": [
+      "dist/xavierdamman.com/blog/2025/open-collective-investors-update-spring-2025.md",
+      "dist/xavierdamman.com/blog/2025/images/open-collective-investors-update-spring-2025_image1.png",
+      "dist/xavierdamman.com/blog/2025/images/open-collective-investors-update-spring-2025_image2.png",
+      "dist/xavierdamman.com/blog/2025/images/open-collective-investors-update-spring-2025_image3.png",
+      "dist/xavierdamman.com/blog/2025/open-collective-investors-update-spring-2025.pdf"
+    ]
+  },
+  "/blog/2017/turning-our-city-into-an-open-collective": {
+    "googleDocId": "1wVCm6020cQYVJ49rA4x6fxjI8l3cB71FT8Zp4H2A5_o",
+    "slug": "turning-our-city-into-an-open-collective",
+    "src": "https://docs.google.com/document/d/1wVCm6020cQYVJ49rA4x6fxjI8l3cB71FT8Zp4H2A5_o/edit?usp=drivesdk",
+    "ctime": "2024-12-07T14:59:48.834Z",
+    "mtime": "2024-12-07T15:00:16.919Z",
+    "ptime": "2024-12-07T15:00:16.887Z",
+    "customDate": "2017-02-16T11:00:00.000Z",
+    "title": "Turning Our City into an Open Collective",
+    "files": [
+      "dist/xavierdamman.com/blog/2017/turning-our-city-into-an-open-collective.md",
+      "dist/xavierdamman.com/blog/2017/images/turning-our-city-into-an-open-collective_image1.png",
+      "dist/xavierdamman.com/blog/2017/images/turning-our-city-into-an-open-collective_image2.png",
+      "dist/xavierdamman.com/blog/2017/images/turning-our-city-into-an-open-collective_image3.png",
+      "dist/xavierdamman.com/blog/2017/images/turning-our-city-into-an-open-collective_image4.png",
+      "dist/xavierdamman.com/blog/2017/images/turning-our-city-into-an-open-collective_image5.png",
+      "dist/xavierdamman.com/blog/2017/turning-our-city-into-an-open-collective.pdf"
+    ]
+  },
+  "/blog/2022/when-citizens-spring": {
+    "googleDocId": "1kORlg-Sd5JY-HkmUoaxE_3tDwTKSK9dDcHYa14bkbAw",
+    "slug": "when-citizens-spring",
+    "src": "https://docs.google.com/document/d/1kORlg-Sd5JY-HkmUoaxE_3tDwTKSK9dDcHYa14bkbAw/edit?usp=drivesdk",
+    "ctime": "2024-10-13T14:36:29.344Z",
+    "mtime": "2024-10-13T15:37:16.732Z",
+    "ptime": "2024-10-13T14:36:32.055Z",
+    "customDate": "2022-05-01T10:00:00.000Z",
+    "title": "When citizens spring",
+    "files": [
+      "dist/xavierdamman.com/blog/2022/when-citizens-spring.md",
+      "dist/xavierdamman.com/blog/2022/images/when-citizens-spring_image1.png",
+      "dist/xavierdamman.com/blog/2022/images/when-citizens-spring_image2.png",
+      "dist/xavierdamman.com/blog/2022/images/when-citizens-spring_image3.png",
+      "dist/xavierdamman.com/blog/2022/images/when-citizens-spring_image4.png",
+      "dist/xavierdamman.com/blog/2022/images/when-citizens-spring_image5.png",
+      "dist/xavierdamman.com/blog/2022/images/when-citizens-spring_image6.png",
+      "dist/xavierdamman.com/blog/2022/images/when-citizens-spring_image7.png",
+      "dist/xavierdamman.com/blog/2022/images/when-citizens-spring_image8.png",
+      "dist/xavierdamman.com/blog/2022/images/when-citizens-spring_image9.png",
+      "dist/xavierdamman.com/blog/2022/images/when-citizens-spring_image10.png",
+      "dist/xavierdamman.com/blog/2022/images/when-citizens-spring_image11.png",
+      "dist/xavierdamman.com/blog/2022/images/when-citizens-spring_image12.png",
+      "dist/xavierdamman.com/blog/2022/images/when-citizens-spring_image13.png",
+      "dist/xavierdamman.com/blog/2022/images/when-citizens-spring_image14.png",
+      "dist/xavierdamman.com/blog/2022/images/when-citizens-spring_image15.png",
+      "dist/xavierdamman.com/blog/2022/images/when-citizens-spring_image16.png",
+      "dist/xavierdamman.com/blog/2022/images/when-citizens-spring_image17.png",
+      "dist/xavierdamman.com/blog/2022/when-citizens-spring.pdf"
+    ]
+  }
+}
