@@ -1,0 +1,11 @@
+service-account-key.json
+service-account-key.*.json
+credentials.json
+token.json
+.env
+.env.*
+!.env.example
+.git
+dist/*
+.vscode
+tests/output

@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v2.4.5
+
+      - name: Cache Deno dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/deno
+            deno.lock
+          key: ${{ runner.os }}-deno-${{ hashFiles('**/deno.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-deno-
+
+      - name: Run tests
+        run: |
+          echo "Running Deno tests..."
+          deno test --allow-read --allow-write --allow-env --allow-net --allow-run --coverage=coverage
+          env
+            GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+
+      - name: Generate coverage report
+        run: |
+          deno coverage coverage --html --output=coverage/html
+          deno coverage coverage --lcov --output=coverage/lcov.info
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
+      - name: Cleanup sensitive files
+        run: |
+          rm -f service-account-key.json
+          rm -rf coverage/
+          echo "Cleanup completed - sensitive files removed"
+
+      - name: Verify cleanup
+        run: |
+          if [ -f "service-account-key.json" ]; then
+            echo "ERROR: Service account key file still exists after cleanup"
+            exit 1
+          else
+            echo "Cleanup verification passed"
+          fi
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v2.4.5
+
+      - name: Run linter
+        run: deno lint
+
+      - name: Check formatting
+        run: deno fmt --check
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [test, lint]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v2.4.5
+
+      - name: Build CSS
+        run: deno task build:css:prod
+
+      - name: Verify build output
+        run: |
+          if [ -f "dist/output.css" ]; then
+            echo "CSS build successful"
+            ls -la dist/
+          else
+            echo "ERROR: CSS build failed"
+            exit 1
+          fi
