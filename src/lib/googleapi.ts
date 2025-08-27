@@ -50,35 +50,32 @@ type GoogleServiceAccountKey = {
   project_id: string;
 };
 
+const GOOGLE_SERVICE_ACCOUNT_KEY = Deno.env.get("GOOGLE_SERVICE_ACCOUNT_KEY");
+const GOOGLE_SERVICE_ACCOUNT_KEY_PATH = Deno.env.get(
+  "GOOGLE_SERVICE_ACCOUNT_KEY_PATH"
+);
 // Service Account only flow: we expect service-account-key.json to exist.
 
-let SERVICE_ACCOUNT_KEY: GoogleServiceAccountKey | undefined = Deno.env.get(
-  "GOOGLE_SERVICE_ACCOUNT_KEY"
-) as GoogleServiceAccountKey | undefined;
-if (!SERVICE_ACCOUNT_KEY) {
-  const SERVICE_ACCOUNT_KEY_PATH =
-    Deno.env.get("GOOGLE_SERVICE_ACCOUNT_KEY_PATH") ||
-    "service-account-key.json";
-  const HAS_SERVICE_ACCOUNT_KEY = await Deno.stat(SERVICE_ACCOUNT_KEY_PATH)
-    .then(() => true)
-    .catch(() => false);
+const serviceAccountKeyString =
+  GOOGLE_SERVICE_ACCOUNT_KEY ||
+  Deno.readTextFileSync(GOOGLE_SERVICE_ACCOUNT_KEY_PATH!);
 
-  if (!HAS_SERVICE_ACCOUNT_KEY) {
-    throw new Error(
-      "Service account key not found. Please set the GOOGLE_SERVICE_ACCOUNT_KEY or GOOGLE_SERVICE_ACCOUNT_KEY_PATH environment variable."
-    );
-  }
-
-  const raw = Deno.readTextFileSync(SERVICE_ACCOUNT_KEY_PATH);
-  SERVICE_ACCOUNT_KEY = JSON.parse(raw) as GoogleServiceAccountKey;
+if (!serviceAccountKeyString) {
+  throw new Error(
+    "Service account key not set. Please set the GOOGLE_SERVICE_ACCOUNT_KEY or GOOGLE_SERVICE_ACCOUNT_KEY_PATH environment variable."
+  );
 }
+
+const serviceAccountKey = JSON.parse(
+  serviceAccountKeyString
+) as GoogleServiceAccountKey;
 
 export const loadCredentials = (): GoogleCredentials => {
   // Minimal stub to satisfy existing call sites; we always use service account
   const json: GoogleCredentials = {
     web: {
       client_id: "",
-      project_id: SERVICE_ACCOUNT_KEY?.project_id || "",
+      project_id: serviceAccountKey.project_id || "",
       auth_uri: "https://accounts.google.com/o/oauth2/auth",
       token_uri: "https://oauth2.googleapis.com/token",
       auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
@@ -99,9 +96,9 @@ export const authorize = async (): Promise<GoogleAuthObject> => {
     "https://www.googleapis.com/auth/drive.appdata",
   ];
   const jwtClient = new google.auth.JWT(
-    SERVICE_ACCOUNT_KEY?.client_email || "",
+    serviceAccountKey.client_email || "",
     undefined,
-    SERVICE_ACCOUNT_KEY?.private_key || "",
+    serviceAccountKey.private_key || "",
     scopes
   );
   await jwtClient.authorize();

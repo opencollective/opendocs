@@ -36,34 +36,6 @@ jobs:
           env
             GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
 
-      - name: Generate coverage report
-        run: |
-          deno coverage coverage --html --output=coverage/html
-          deno coverage coverage --lcov --output=coverage/lcov.info
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          file: ./coverage/lcov.info
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: false
-
-      - name: Cleanup sensitive files
-        run: |
-          rm -f service-account-key.json
-          rm -rf coverage/
-          echo "Cleanup completed - sensitive files removed"
-
-      - name: Verify cleanup
-        run: |
-          if [ -f "service-account-key.json" ]; then
-            echo "ERROR: Service account key file still exists after cleanup"
-            exit 1
-          else
-            echo "Cleanup verification passed"
-          fi
-
   lint:
     runs-on: ubuntu-latest
 
