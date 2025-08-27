@@ -7,6 +7,7 @@ import {
 } from "./googleapi.ts";
 import { downloadGoogleDoc } from "./googledoc.ts";
 import { getSitemapEntryByGoogleDocId } from "./utils.ts";
+const DATA_DIR = Deno.env.get("DATA_DIR") || "./dist";
 
 export type SitemapEntry = {
   googleDocId: string;
@@ -32,7 +33,7 @@ type Auth = {
 export const publishDocsInFolder = async (
   auth: GoogleAuthObject,
   folder: Folder,
-  basePath: string = "./dist",
+  basePath: string = DATA_DIR,
   sitemap: Record<urlpath, SitemapEntry> = {},
 ) => {
   const folderPath = join(basePath, folder.name.replace(/\//g, "-"));

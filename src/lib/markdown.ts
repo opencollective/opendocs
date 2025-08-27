@@ -4,6 +4,8 @@ import { parse } from "npm:chrono-node";
 import { SitemapEntry } from "./publishing.ts";
 import { getGoogleDocId } from "./googledoc.ts";
 
+const DATA_DIR = Deno.env.get("DATA_DIR") || "./dist";
+
 // Function to extract base64 images from markdown and save them as separate files
 function base64ToUint8Array(base64: string): Uint8Array {
   const binaryString = atob(base64); // Decodes Base64 to a binary string
@@ -208,7 +210,7 @@ export async function processMarkdown(
 }> {
   const _sitemap = sitemap ||
     (JSON.parse(
-      await Deno.readTextFile(`./dist/${host}/sitemap.json`),
+      await Deno.readTextFile(join(DATA_DIR, host, "sitemap.json")),
     ) as Record<string, SitemapEntry>);
   const sitemapEntryByGoogleDocId: Record<string, SitemapEntry> = {};
   Object.keys(_sitemap).forEach((key) => {

@@ -1,6 +1,6 @@
-import { google } from "googleapis";
+import { driveactivity_v2, google } from "googleapis";
 
-// Define proper types instead of any
+type DriveActivity = driveactivity_v2.Schema$DriveActivity;
 
 export type GoogleAuthObject = InstanceType<typeof google.auth.JWT>;
 
@@ -93,6 +93,7 @@ export const authorize = async (): Promise<GoogleAuthObject> => {
     "https://www.googleapis.com/auth/drive.readonly",
     "https://www.googleapis.com/auth/documents.readonly",
     "https://www.googleapis.com/auth/drive.appdata",
+    "https://www.googleapis.com/auth/drive.activity.readonly",
   ];
   const jwtClient = new google.auth.JWT(
     serviceAccountKey.client_email || "",
@@ -383,4 +384,30 @@ export async function getGoogleDocPublishedTime(
     }
   }
   return undefined;
+}
+
+export async function getLatestActivities(
+  auth: GoogleAuthObject,
+  folderId: string,
+  limit: number = 10,
+): Promise<DriveActivity[] | undefined> {
+  const activityService = google.driveactivity({ version: "v2", auth });
+  const output: DriveActivity[] = [];
+  try {
+    const response = await activityService.activity.query({
+      requestBody: {
+        pageSize: limit,
+        ancestorName: `items/${folderId}`,
+      },
+    });
+    const activities = response.data.activities;
+    if (activities && activities.length) {
+      activities.forEach((activity: DriveActivity) => {
+        output.push(activity);
+      });
+    }
+    return output;
+  } catch (error) {
+    console.error("Error fetching activities: ", error);
+  }
 }

@@ -12,6 +12,8 @@ if (Deno.build.os === "darwin") {
   attributes.url = "user.url";
 }
 
+const DATA_DIR = Deno.env.get("DATA_DIR") || "./dist";
+
 export function setExtendedAttribute(
   filepath: string,
   key: string,
@@ -120,11 +122,12 @@ export function updateSitemapForHost(
   host: string,
   sitemap: Record<string, SitemapEntry>,
 ) {
-  const sitemapPath = `./dist/${host}/sitemap.json`;
+  const sitemapPath = join(DATA_DIR, host, "sitemap.json");
 
   // Remove the host from the sitemap keys
   Object.keys(sitemap).forEach((key) => {
-    sitemap[key.replace(`/dist/${host}`, "")] = sitemap[key];
+    const indexOf = key.indexOf(`/${host}/`);
+    sitemap[key.substring(indexOf + host.length + 1)] = sitemap[key];
     delete sitemap[key];
   });
 

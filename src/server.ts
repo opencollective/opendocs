@@ -3,6 +3,7 @@ import { SitemapEntry } from "./lib/publishing.ts";
 
 // Load environment variables
 const DEFAULT_HOST = Deno.env.get("DEFAULT_HOST") || "localhost";
+const DATA_DIR = Deno.env.get("DATA_DIR") || "./dist";
 console.log(">>> DEFAULT_HOST", DEFAULT_HOST);
 interface RequestContext {
   host: string;
@@ -27,7 +28,7 @@ function parseRequest(url: URL): RequestContext {
     slug = "index";
   }
 
-  let filepath = `dist/${host}/${slug}`;
+  let filepath = `${DATA_DIR}/${host}/${slug}`;
   // If there is no extension, default to .md
   if (!slug.match(/\.[^.]+$/)) {
     filepath += ".md";
@@ -306,7 +307,7 @@ async function serveMarkdown(
 async function generateRSSFeed(host: string): Promise<Response> {
   try {
     const sitemap = JSON.parse(
-      await Deno.readTextFile(`./dist/${host}/sitemap.json`),
+      await Deno.readTextFile(`${DATA_DIR}/${host}/sitemap.json`),
     );
 
     // Convert sitemap to array and sort by customDate orptime (newest first)
@@ -328,7 +329,7 @@ async function generateRSSFeed(host: string): Promise<Response> {
       entries.map(async (entry) => {
         try {
           // Read the markdown file for this entry
-          const markdownPath = `./dist/${host}/${entry.slug}.md`;
+          const markdownPath = `${DATA_DIR}/${host}/${entry.slug}.md`;
           const markdown = await Deno.readTextFile(markdownPath);
 
           // Convert markdown to HTML for the description
@@ -427,7 +428,7 @@ async function handler(req: Request): Promise<Response> {
   // Handle CSS requests
   if (url.pathname === "/output.css") {
     try {
-      const cssContent = await Deno.readTextFile("./dist/output.css");
+      const cssContent = await Deno.readTextFile(`${DATA_DIR}/output.css`);
       return new Response(cssContent, {
         headers: {
           "Content-Type": "text/css; charset=utf-8",
@@ -444,8 +445,8 @@ async function handler(req: Request): Promise<Response> {
 
   const { host, slug, filepath } = parseRequest(url);
 
-  // Check for static files in ./dist directory first
-  const staticFilePath = `./${filepath}`;
+  // Check for static files in DATA_DIR directory first
+  const staticFilePath = `${DATA_DIR}${filepath}`;
   try {
     const staticFileStat = await Deno.stat(staticFilePath);
     if (staticFileStat.isFile) {
@@ -465,7 +466,7 @@ async function handler(req: Request): Promise<Response> {
   } catch (error) {
     if (error instanceof Deno.errors.NotFound) {
       try {
-        await Deno.stat(`./dist/${host}`);
+        await Deno.stat(`${DATA_DIR}/${host}`);
         // Host exists but file doesn't - show file not found error
         const errorHtml = createErrorPage(
           "Page Not Found",
