@@ -2,15 +2,11 @@ import { downloadGoogleDoc } from "../src/lib/googledoc.ts";
 import {
   authorize,
   listGoogleDocs,
-  getAuthenticatedUser,
   listSharedFolders,
 } from "../src/lib/googleapi.ts";
 import { expect } from "jsr:@std/expect/expect";
-const unpublishedGoogleDocId = "1CqMQHal9ayNMt57wNDN3yTwY_aRIEe3V57kD7y0OL7Y";
 const publishedGoogleDocId = "1EYqqbQVkkPRjiDccN59LeXDH9LhksiUe3vNX8C-Y2DI";
-const testGoogleDocId = "1mCjheAOEicVAfuR1bBUF6YDVTX5kX9mnAn8nrmbUgxs";
 const testDriveFolder = "10aieWT-xqTe2GEJb3Tg2Z0ebkQBVZ8v-";
-// const testDriveFolder = "1akFT2Au9-WqbsTNNKsa9-tsVYHs1U42-";
 
 Deno.test("get shared folders", async () => {
   const auth = await authorize();

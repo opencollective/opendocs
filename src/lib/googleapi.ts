@@ -1,5 +1,35 @@
-import { google, Auth } from "npm:googleapis";
-export type OAuth2Client = Auth.OAuth2Client;
+import { google } from "googleapis";
+
+// Define proper types instead of any
+
+export type GoogleAuthObject = InstanceType<typeof google.auth.JWT>;
+
+type GoogleDocContent = {
+  title: string;
+  body: {
+    content: Array<{
+      paragraph?: {
+        elements: Array<{
+          inlineObjectElement?: {
+            inlineObjectId: string;
+          };
+        }>;
+      };
+    }>;
+  };
+  inlineObjects: Record<
+    string,
+    {
+      inlineObjectProperties: {
+        embeddedObject: {
+          imageProperties: {
+            contentUri: string;
+          };
+        };
+      };
+    }
+  >;
+};
 
 type GoogleCredentials = {
   web: {
@@ -61,7 +91,7 @@ export const loadCredentials = (): GoogleCredentials => {
 };
 
 // Create an OAuth2 client with the given credentials
-export const authorize = async (): Promise<OAuth2Client> => {
+export const authorize = async (): Promise<GoogleAuthObject> => {
   const scopes = [
     "https://www.googleapis.com/auth/drive.metadata.readonly",
     "https://www.googleapis.com/auth/drive.readonly",
@@ -75,79 +105,14 @@ export const authorize = async (): Promise<OAuth2Client> => {
     scopes
   );
   await jwtClient.authorize();
-  return jwtClient as unknown as OAuth2Client;
-};
-
-// Get and store new token after prompting for user authorization
-export const getAccessToken = async (
-  oAuth2Client: OAuth2Client
-): Promise<OAuth2Client> => {
-  const authUrl = oAuth2Client.generateAuthUrl({
-    access_type: "offline",
-    scope: [
-      "https://www.googleapis.com/auth/drive.metadata.readonly",
-      "https://www.googleapis.com/auth/drive.readonly",
-      "https://www.googleapis.com/auth/documents.readonly",
-      "https://www.googleapis.com/auth/userinfo.profile", // Add this
-      "https://www.googleapis.com/auth/userinfo.email", // Add this
-      "https://www.googleapis.com/auth/user.emails.read", // Add this (optional)
-      "https://www.googleapis.com/auth/drive.appdata", // Add this for revisions
-      "https://www.googleapis.com/auth/user.addresses.read",
-      "https://www.googleapis.com/auth/user.emails.read",
-      "https://www.googleapis.com/auth/user.phonenumbers.read",
-    ],
-  });
-  console.log("Authorize this app by visiting this url:", authUrl);
-
-  const code = prompt("Enter the code from that page here: ") || "";
-  try {
-    const { tokens } = await oAuth2Client.getToken(code);
-    oAuth2Client.setCredentials(tokens);
-
-    // Store the token to disk for later program executions
-    await Deno.writeTextFile("token.json", JSON.stringify(tokens));
-    console.log("Token stored to token.json");
-    return oAuth2Client;
-  } catch (err) {
-    throw new Error("Error retrieving access token: " + err);
-  }
-};
-
-// Function to refresh expired tokens
-export const refreshAccessToken = async (
-  oAuth2Client: OAuth2Client
-): Promise<OAuth2Client> => {
-  try {
-    // Get current credentials
-    const credentials = oAuth2Client.credentials;
-
-    if (!credentials.refresh_token) {
-      throw new Error(
-        "No refresh token available. User needs to re-authorize."
-      );
-    }
-
-    // Refresh the access token using the refresh token
-    const { credentials: newCredentials } =
-      await oAuth2Client.refreshAccessToken();
-
-    // Update the client with new credentials
-    oAuth2Client.setCredentials(newCredentials);
-
-    // Store the updated token to disk
-    await Deno.writeTextFile("token.json", JSON.stringify(newCredentials));
-    console.log("Access token refreshed successfully");
-
-    return oAuth2Client;
-  } catch (error) {
-    console.error("Failed to refresh access token:", error);
-    // If refresh fails, user needs to re-authorize
-    return getAccessToken(oAuth2Client);
-  }
+  return jwtClient;
 };
 
 // Function to get metadata of a specific file
-export const getFileMetadata = async (auth: any, fileId: string) => {
+export const getFileMetadata = async (
+  auth: GoogleAuthObject,
+  fileId: string
+) => {
   const drive = google.drive({ version: "v3", auth });
 
   try {
@@ -164,7 +129,7 @@ export const getFileMetadata = async (auth: any, fileId: string) => {
 };
 
 // List files in a specific Google Drive folder
-export const listFiles = async (auth: any, folderId: string) => {
+export const listFiles = async (auth: GoogleAuthObject, folderId: string) => {
   const drive = google.drive({ version: "v3", auth });
 
   try {
@@ -202,7 +167,9 @@ export type Folder = {
   mtime: Date;
 };
 
-export async function listSharedFolders(auth: any): Promise<Folder[]> {
+export async function listSharedFolders(
+  auth: GoogleAuthObject
+): Promise<Folder[]> {
   const driveService = google.drive({ version: "v3", auth });
   const output: Folder[] = [];
   try {
@@ -230,7 +197,7 @@ export async function listSharedFolders(auth: any): Promise<Folder[]> {
   return output;
 }
 export async function listFolders(
-  auth: any,
+  auth: GoogleAuthObject,
   folderId: string
 ): Promise<Folder[]> {
   const driveService = google.drive({ version: "v3", auth });
@@ -272,7 +239,7 @@ export type GoogleDocMetadata = {
 };
 
 export async function listGoogleDocs(
-  auth: any,
+  auth: GoogleAuthObject,
   folderId: string
 ): Promise<GoogleDocMetadata[]> {
   const driveService = google.drive({ version: "v3", auth });
@@ -318,14 +285,8 @@ export async function listGoogleDocs(
   return output;
 }
 
-export type GoogleDocContent = {
-  title: string;
-  body: any;
-  inlineObjects: any;
-};
-
 export const getGoogleDocContent = async (
-  auth: any,
+  auth: GoogleAuthObject,
   documentId: string
 ): Promise<GoogleDocContent | null> => {
   const docs = google.docs({ version: "v1", auth });
@@ -346,7 +307,10 @@ export const getGoogleDocContent = async (
   return null;
 };
 
-export async function getGoogleDocContributors(auth: any, googleDocId: string) {
+export async function getGoogleDocContributors(
+  auth: GoogleAuthObject,
+  googleDocId: string
+) {
   const driveService = google.drive({ version: "v3", auth });
 
   try {
@@ -389,7 +353,7 @@ export async function getGoogleDocContributors(auth: any, googleDocId: string) {
   }
 }
 export async function getGoogleDocPublishedTime(
-  auth: any,
+  auth: GoogleAuthObject,
   googleDocId: string
 ): Promise<Date | undefined> {
   const driveService = google.drive({ version: "v3", auth });
@@ -424,32 +388,3 @@ export async function getGoogleDocPublishedTime(
   }
   return undefined;
 }
-
-// Get user profile information
-export const getAuthenticatedUser = async (auth: any) => {
-  try {
-    const response = await fetch(
-      "https://people.googleapis.com/v1/people/me?personFields=emailAddresses",
-      {
-        headers: {
-          Authorization: `Bearer ${auth.credentials.access_token}`,
-        },
-      }
-    );
-
-    if (response.ok) {
-      const userInfo = await response.json();
-      return userInfo.emailAddresses[0].value;
-    } else {
-      // Get the full error response
-      const res = await response.json();
-      console.log(
-        `HTTP ${response.status}: ${response.statusText}`,
-        res.error.message
-      );
-    }
-  } catch (error) {
-    console.error("Error fetching user profile:", error);
-  }
-  return null;
-};

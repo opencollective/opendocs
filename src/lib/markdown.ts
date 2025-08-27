@@ -55,7 +55,9 @@ export async function extractImagesFromMarkdown(
   // Ensure output directory exists
   try {
     await Deno.mkdir(outputPath);
-  } catch (e) {}
+  } catch (_e) {
+    // Directory might already exist, which is fine
+  }
 
   const imagePaths = [];
   while ((match = imageRegex.exec(markdownContent)) !== null) {
@@ -193,22 +195,29 @@ export function extractFooterSitemap(markdown: string) {
 
 export async function processMarkdown(
   markdown: string,
-  { host, slug }: { host: string; slug: string }
+  {
+    host,
+    slug,
+    sitemap,
+  }: { host: string; slug: string; sitemap?: Record<string, SitemapEntry> }
 ): Promise<{
   markdown: string;
   pageInfo: SitemapEntry;
   footerSitemap: Record<string, PathInfo>;
 }> {
-  const sitemap = JSON.parse(
-    await Deno.readTextFile(`./dist/${host}/sitemap.json`)
-  ) as Record<string, SitemapEntry>;
+  const _sitemap =
+    sitemap ||
+    (JSON.parse(
+      await Deno.readTextFile(`./dist/${host}/sitemap.json`)
+    ) as Record<string, SitemapEntry>);
   const sitemapEntryByGoogleDocId: Record<string, SitemapEntry> = {};
-  Object.keys(sitemap).forEach((key) => {
-    sitemapEntryByGoogleDocId[sitemap[key].googleDocId] = sitemap[key];
-    sitemapEntryByGoogleDocId[sitemap[key].googleDocId].slug = key.substring(1);
+  Object.keys(_sitemap).forEach((key) => {
+    sitemapEntryByGoogleDocId[_sitemap[key].googleDocId] = _sitemap[key];
+    sitemapEntryByGoogleDocId[_sitemap[key].googleDocId].slug =
+      key.substring(1);
   });
 
-  const pageInfo = sitemap[`/${slug}`];
+  const pageInfo = _sitemap[`/${slug}`];
 
   // Replace all occurences of [.*](https://docs.google.com/document/d/1nB_HlbaST2TBYyinxZLKcz0dwjGLi0uKkeKhLxeEpw8/edit?tab=t.0#heading=h.d0xroirb1ubp) with [.*](slug) if googleDocId is part of the sitemap
   let newMarkdown = markdown.replace(

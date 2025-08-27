@@ -1,7 +1,12 @@
 import { join } from "jsr:@std/path";
-import { Folder, listGoogleDocs, listFolders } from "./googleapi.ts";
+import {
+  Folder,
+  listGoogleDocs,
+  listFolders,
+  GoogleAuthObject,
+} from "./googleapi.ts";
 import { downloadGoogleDoc } from "./googledoc.ts";
-import { listFiles, getSitemapEntryByGoogleDocId } from "./utils.ts";
+import { getSitemapEntryByGoogleDocId } from "./utils.ts";
 
 export type SitemapEntry = {
   googleDocId: string;
@@ -17,8 +22,15 @@ export type SitemapEntry = {
 
 type urlpath = `/${string}`;
 
+// Define a proper type for auth instead of any
+type Auth = {
+  credentials: {
+    access_token: string;
+  };
+};
+
 export const publishDocsInFolder = async (
-  auth: any,
+  auth: GoogleAuthObject,
   folder: Folder,
   basePath: string = "./dist",
   sitemap: Record<urlpath, SitemapEntry> = {}

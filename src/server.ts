@@ -1,4 +1,5 @@
 import { CSS, render } from "@deno/gfm";
+import { SitemapEntry } from "./lib/publishing.ts";
 
 // Load environment variables
 const DEFAULT_HOST = Deno.env.get("DEFAULT_HOST") || "localhost";
@@ -308,16 +309,17 @@ async function generateRSSFeed(host: string): Promise<Response> {
 
     // Convert sitemap to array and sort by customDate orptime (newest first)
     const entries = Object.entries(sitemap)
-      .map(([slug, entry]: [string, any]) => ({
-        slug: slug.startsWith("/") ? slug.slice(1) : slug,
-        ...entry,
+      .map(([path, entry]) => ({
+        slug: path.startsWith("/") ? path.slice(1) : path,
+        ...(entry as SitemapEntry),
       }))
       .filter((entry) => entry.customDate || entry.ptime) // Only include entries with ptime
-      .sort(
-        (a, b) =>
-          new Date(b.customDate ?? b.ptime).getTime() -
-          new Date(a.customDate ?? a.ptime).getTime()
-      );
+      .sort((a, b) => {
+        const dateA = a.customDate ?? a.ptime;
+        const dateB = b.customDate ?? b.ptime;
+        if (!dateA || !dateB) return 0;
+        return new Date(dateB).getTime() - new Date(dateA).getTime();
+      });
 
     // Process entries to include full content
     const processedEntries = await Promise.all(
@@ -426,7 +428,7 @@ async function handler(req: Request): Promise<Response> {
           "Cache-Control": "public, max-age=3600", // Cache for 1 hour
         },
       });
-    } catch (error) {
+    } catch (_error) {
       // If CSS file doesn't exist, return empty CSS
       return new Response("", {
         headers: { "Content-Type": "text/css; charset=utf-8" },

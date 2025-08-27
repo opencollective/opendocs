@@ -1,14 +1,30 @@
-import slugify from "npm:slugify@1.6.6";
 import { join } from "jsr:@std/path";
+import { getGoogleDocContent, GoogleAuthObject } from "./googleapi.ts";
 import { extractImagesFromMarkdown } from "./markdown.ts";
-import { getGoogleDocContent, GoogleDocMetadata } from "./googleapi.ts";
 import { writeFileWithMetadata } from "./utils.ts";
+import slugify from "npm:slugify";
+
+// Define a proper type for auth instead of any
+type Auth = {
+  credentials: {
+    access_token: string;
+  };
+};
 
 type Element = {
   inlineObjectElement: { inlineObjectId: string };
 };
 
-type DownloadedGoogleDoc = {
+export type GoogleDocMetadata = {
+  id: string;
+  name: string;
+  src: string;
+  ctime: Date;
+  mtime: Date;
+  ptime?: Date;
+};
+
+export type DownloadedGoogleDoc = {
   googleDocId: string;
   title: string;
   slug: string;
@@ -17,7 +33,7 @@ type DownloadedGoogleDoc = {
 };
 
 export async function downloadGoogleDoc(
-  auth: any,
+  auth: GoogleAuthObject,
   doc: GoogleDocMetadata,
   downloadPath: string
 ): Promise<DownloadedGoogleDoc | undefined> {
@@ -34,32 +50,32 @@ export async function downloadGoogleDoc(
   console.log("downloadGoogleDoc to", downloadPath);
   try {
     Deno.mkdirSync(downloadPath, { recursive: true });
-  } catch (e) {}
+  } catch (_e) {
+    // Directory might already exist, which is fine
+  }
 
   const data = await getGoogleDocContent(auth, googleDocId);
   const name = data?.title || googleDocId;
   const downloadedFiles: string[] = [];
   const inlineObjectElements: string[] = [];
-  data?.body.content.forEach(
-    (block: { paragraph: { elements: Element[] } }) => {
-      if (!block.paragraph?.elements?.length) {
-        return;
-      }
-      block.paragraph.elements.forEach((element: Element) => {
-        if (element.inlineObjectElement) {
-          inlineObjectElements.push(element.inlineObjectElement.inlineObjectId);
-        }
-      });
+  data?.body.content.forEach((block) => {
+    if (!block.paragraph?.elements?.length) {
+      return;
     }
-  );
+    block.paragraph.elements.forEach((element) => {
+      if (element.inlineObjectElement) {
+        inlineObjectElements.push(element.inlineObjectElement.inlineObjectId);
+      }
+    });
+  });
 
   const images = new Map<string, string>();
   for (let i = 0; i < inlineObjectElements.length; i++) {
     const inlineObjectId = inlineObjectElements[i];
     images.set(
       `image${i + 1}`,
-      data?.inlineObjects[inlineObjectId].inlineObjectProperties.embeddedObject
-        .imageProperties.contentUri
+      data?.inlineObjects[inlineObjectId]?.inlineObjectProperties.embeddedObject
+        ?.imageProperties.contentUri || ""
     );
   }
 
@@ -94,7 +110,7 @@ export async function downloadGoogleDoc(
 }
 
 export async function downloadFormat(
-  auth: any,
+  auth: GoogleAuthObject,
   googleDocId: string,
   filepath: string,
   format: string

@@ -12,7 +12,9 @@
     "npm:@types/node@*": "22.15.15",
     "npm:chrono-node@*": "2.8.4",
     "npm:github-slugger@2": "2.0.0",
+    "npm:google-auth-library@9.0.0": "9.0.0",
     "npm:googleapis@*": "144.0.0",
+    "npm:googleapis@128.0.0": "128.0.0",
     "npm:he@^1.2.0": "1.2.0",
     "npm:katex@0.16": "0.16.11",
     "npm:marked-alert@2": "2.1.0_marked@12.0.2",
@@ -22,6 +24,7 @@
     "npm:path@*": "0.12.7",
     "npm:prismjs@^1.29.0": "1.29.0",
     "npm:sanitize-html@^2.13.0": "2.13.1",
+    "npm:slugify@*": "1.6.6",
     "npm:slugify@1.6.6": "1.6.6",
     "npm:tailwindcss@^3.4.0": "3.4.17_postcss@8.5.2"
   },
@@ -442,6 +445,18 @@
       ],
       "bin": true
     },
+    "google-auth-library@9.0.0": {
+      "integrity": "sha512-IQGjgQoVUAfOk6khqTVMLvWx26R+yPw9uLyb1MNyMQpdKiKt0Fd9sp4NWoINjyGHR8S3iw12hMTYK7O8J07c6Q==",
+      "dependencies": [
+        "base64-js",
+        "ecdsa-sig-formatter",
+        "gaxios",
+        "gcp-metadata",
+        "gtoken",
+        "jws",
+        "lru-cache@6.0.0"
+      ]
+    },
     "google-auth-library@9.14.2": {
       "integrity": "sha512-R+FRIfk1GBo3RdlRYWPdwk8nmtVUOn6+BkDomAC46KoU8kzXzE1HLmOasSCbWUByMMAGkknVF0G5kQ69Vj7dlA==",
       "dependencies": [
@@ -458,16 +473,23 @@
       "dependencies": [
         "extend",
         "gaxios",
-        "google-auth-library",
+        "google-auth-library@9.14.2",
         "qs",
         "url-template",
         "uuid"
       ]
     },
+    "googleapis@128.0.0": {
+      "integrity": "sha512-+sLtVYNazcxaSD84N6rihVX4QiGoqRdnlz2SwmQQkadF31XonDfy4ufk3maMg27+FiySrH0rd7V8p+YJG6cknA==",
+      "dependencies": [
+        "google-auth-library@9.14.2",
+        "googleapis-common"
+      ]
+    },
     "googleapis@144.0.0": {
       "integrity": "sha512-ELcWOXtJxjPX4vsKMh+7V+jZvgPwYMlEhQFiu2sa9Qmt5veX8nwXPksOWGGN6Zk4xCiLygUyaz7xGtcMO+Onxw==",
       "dependencies": [
-        "google-auth-library",
+        "google-auth-library@9.14.2",
         "googleapis-common"
       ]
     },
@@ -599,6 +621,12 @@
     "lru-cache@10.4.3": {
       "integrity": "sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ=="
     },
+    "lru-cache@6.0.0": {
+      "integrity": "sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==",
+      "dependencies": [
+        "yallist"
+      ]
+    },
     "marked-alert@2.1.0_marked@12.0.2": {
       "integrity": "sha512-X95Z8PCDgWa0bBfM70GxZG3LD/leUrhXc3cx3w1eFExBhswd1oXn/S4S+9H8ypPdCY7okREb4dItUOc+VJq4jQ==",
       "dependencies": [
@@ -692,7 +720,7 @@
     "path-scurry@1.11.1": {
       "integrity": "sha512-Xa4Nw17FS9ApQFJ9umLiJS4orGjm7ZzwUrwamcGQuHSzDyth9boKDaycYdDcZDuqYATXw4HFXgaqWTctW/v1HA==",
       "dependencies": [
-        "lru-cache",
+        "lru-cache@10.4.3",
         "minipass"
       ]
     },
@@ -1027,6 +1055,9 @@
         "string-width@5.1.2",
         "strip-ansi@7.1.0"
       ]
+    },
+    "yallist@4.0.0": {
+      "integrity": "sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A=="
     },
     "yaml@2.7.0": {
       "integrity": "sha512-+hSoy/QHluxmC9kCIJyL/uyFmLmc+e5CFR5Wa+bpIhIj85LVb9ZH2nVnqrHoSvKogwODv0ClqZkmiSSaIH5LTA==",

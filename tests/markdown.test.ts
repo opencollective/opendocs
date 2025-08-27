@@ -1,8 +1,6 @@
 import { expect } from "jsr:@std/expect/expect";
-import {
-  extractImagesFromMarkdown,
-  processMarkdown,
-} from "../src/lib/markdown.ts";
+import { processMarkdown } from "../src/lib/markdown.ts";
+import { SitemapEntry } from "../src/lib/publishing.ts";
 
 // Deno.test("Extract images from markdown", async () => {
 //   Deno.copyFileSync(
@@ -44,6 +42,9 @@ Deno.test("Process markdown", async () => {
   } = await processMarkdown(markdown, {
     host: "xavierdamman.com",
     slug: "index",
+    sitemap: JSON.parse(
+      await Deno.readTextFile(`./tests/fixtures/sitemap.json`)
+    ) as Record<string, SitemapEntry>,
   });
   console.log(">>> pageInfo", pageInfo);
   console.log(">>> sitemap", footerSitemap);
