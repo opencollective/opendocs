@@ -1,4 +1,4 @@
-import { join } from "jsr:@std/path";
+import { dirname, join } from "jsr:@std/path";
 import { getGoogleDocId } from "./googledoc.ts";
 import { SitemapEntry } from "./publishing.ts";
 
@@ -77,6 +77,8 @@ export function writeFileWithMetadata(
   content: string | Uint8Array<ArrayBuffer>,
   metadata?: { url?: string; comment?: string },
 ) {
+  Deno.mkdirSync(dirname(filepath), { recursive: true });
+
   if (typeof content === "string") {
     Deno.writeTextFile(filepath, content);
   } else {
