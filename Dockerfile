@@ -13,4 +13,4 @@ WORKDIR /app
 # Copy your project files
 COPY . .
 
-CMD ["deno", "run", "--allow-read", "--allow-net", "--allow-env", "--no-prompt", "src/server.ts"]
+CMD ["deno", "task", "start"]

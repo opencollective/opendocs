@@ -1,3 +1,5 @@
+server
+sync
 service-account-key.json
 service-account-key.*.json
 credentials.json

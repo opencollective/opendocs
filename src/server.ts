@@ -314,8 +314,8 @@ async function generateRSSFeed(host: string): Promise<Response> {
     // Convert sitemap to array and sort by customDate orptime (newest first)
     const entries = Object.entries(sitemap)
       .map(([path, entry]) => ({
-        slug: path.startsWith("/") ? path.slice(1) : path,
         ...(entry as SitemapEntry),
+        slug: path.startsWith("/") ? path.slice(1) : path,
       }))
       .filter((entry) => entry.customDate || entry.ptime) // Only include entries with ptime
       .sort((a, b) => {
@@ -354,7 +354,7 @@ async function generateRSSFeed(host: string): Promise<Response> {
           console.warn(`Could not read content for ${entry.slug}:`, error);
           return {
             ...entry,
-            fullContent: entry.description || "",
+            fullContent: "",
             title: entry.title || entry.slug,
           };
         }
@@ -380,7 +380,7 @@ async function generateRSSFeed(host: string): Promise<Response> {
       <guid>https://${host}/${entry.slug}</guid>
       <pubDate>${
             new Date(
-              entry.customDate ?? entry.ptime,
+              entry.customDate ?? entry.ptime ?? new Date(),
             ).toUTCString()
           }</pubDate>
       <description><![CDATA[${entry.fullContent}]]></description>
