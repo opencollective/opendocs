@@ -58,13 +58,15 @@ export async function downloadGoogleDoc(
   const name = data?.title || googleDocId;
   const downloadedFiles: string[] = [];
   const inlineObjectElements: string[] = [];
-  data?.body.content.forEach((block) => {
+  data?.body?.content?.forEach((block) => {
     if (!block.paragraph?.elements?.length) {
       return;
     }
     block.paragraph.elements.forEach((element) => {
       if (element.inlineObjectElement) {
-        inlineObjectElements.push(element.inlineObjectElement.inlineObjectId);
+        inlineObjectElements.push(
+          element.inlineObjectElement.inlineObjectId || "",
+        );
       }
     });
   });
@@ -74,8 +76,8 @@ export async function downloadGoogleDoc(
     const inlineObjectId = inlineObjectElements[i];
     images.set(
       `image${i + 1}`,
-      data?.inlineObjects[inlineObjectId]?.inlineObjectProperties.embeddedObject
-        ?.imageProperties.contentUri || "",
+      data?.inlineObjects?.[inlineObjectId]?.inlineObjectProperties
+        ?.embeddedObject?.imageProperties?.contentUri || "",
     );
   }
 

@@ -3,7 +3,11 @@
   "specifiers": {
     "jsr:@deno/gfm@0.11": "0.11.0",
     "jsr:@denosaurs/emoji@~0.3.1": "0.3.1",
+    "jsr:@std/assert@^1.0.6": "1.0.13",
+    "jsr:@std/expect@*": "1.0.5",
     "jsr:@std/internal@^1.0.10": "1.0.10",
+    "jsr:@std/internal@^1.0.4": "1.0.10",
+    "jsr:@std/internal@^1.0.6": "1.0.10",
     "jsr:@std/path@*": "1.1.2",
     "npm:chrono-node@*": "2.8.4",
     "npm:gfm@*": "0.0.1",
@@ -39,13 +43,26 @@
     "@denosaurs/emoji@0.3.1": {
       "integrity": "b0aed5f55dec99e83da7c9637fe0a36d1d6252b7c99deaaa3fc5dea3fcf3da8b"
     },
+    "@std/assert@1.0.13": {
+      "integrity": "ae0d31e41919b12c656c742b22522c32fb26ed0cba32975cb0de2a273cb68b29",
+      "dependencies": [
+        "jsr:@std/internal@^1.0.6"
+      ]
+    },
+    "@std/expect@1.0.5": {
+      "integrity": "8c7ac797e2ffe57becc6399c0f2fd06230cb9ef124d45229c6e592c563824af1",
+      "dependencies": [
+        "jsr:@std/assert",
+        "jsr:@std/internal@^1.0.4"
+      ]
+    },
     "@std/internal@1.0.10": {
       "integrity": "e3be62ce42cab0e177c27698e5d9800122f67b766a0bea6ca4867886cbde8cf7"
     },
     "@std/path@1.1.2": {
       "integrity": "c0b13b97dfe06546d5e16bf3966b1cadf92e1cc83e56ba5476ad8b498d9e3038",
       "dependencies": [
-        "jsr:@std/internal"
+        "jsr:@std/internal@^1.0.10"
       ]
     }
   },

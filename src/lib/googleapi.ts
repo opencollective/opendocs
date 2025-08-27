@@ -1,49 +1,9 @@
-import { driveactivity_v2, google } from "googleapis";
+import { docs_v1, driveactivity_v2, google } from "googleapis";
 
 type DriveActivity = driveactivity_v2.Schema$DriveActivity;
+type GoogleDocContent = docs_v1.Schema$Document;
 
 export type GoogleAuthObject = InstanceType<typeof google.auth.JWT>;
-
-type GoogleDocContent = {
-  title: string;
-  body: {
-    content: Array<{
-      paragraph?: {
-        elements: Array<{
-          inlineObjectElement?: {
-            inlineObjectId: string;
-          };
-        }>;
-      };
-    }>;
-  };
-  inlineObjects: Record<
-    string,
-    {
-      inlineObjectProperties: {
-        embeddedObject: {
-          imageProperties: {
-            contentUri: string;
-          };
-        };
-      };
-    }
-  >;
-};
-
-type GoogleCredentials = {
-  web: {
-    client_id: string;
-    project_id: string;
-    auth_uri: string;
-    token_uri: string;
-    auth_provider_x509_cert_url: string;
-    client_secret: string;
-    redirect_uris: string[];
-    javascript_origins: string[];
-  };
-};
-
 type GoogleServiceAccountKey = {
   client_email: string;
   private_key: string;
@@ -56,35 +16,34 @@ const GOOGLE_SERVICE_ACCOUNT_KEY_PATH = Deno.env.get(
 );
 // Service Account only flow: we expect service-account-key.json to exist.
 
-const serviceAccountKeyString = GOOGLE_SERVICE_ACCOUNT_KEY ||
-  Deno.readTextFileSync(GOOGLE_SERVICE_ACCOUNT_KEY_PATH!);
+let serviceAccountKeyString: string | undefined;
+if (GOOGLE_SERVICE_ACCOUNT_KEY) {
+  serviceAccountKeyString = GOOGLE_SERVICE_ACCOUNT_KEY;
+} else if (GOOGLE_SERVICE_ACCOUNT_KEY_PATH) {
+  try {
+    serviceAccountKeyString = await Deno.readTextFile(
+      GOOGLE_SERVICE_ACCOUNT_KEY_PATH,
+    );
+  } catch (error) {
+    console.error(
+      "Error reading service account key file:",
+      GOOGLE_SERVICE_ACCOUNT_KEY_PATH,
+      error,
+    );
+    Deno.exit(1);
+  }
+}
 
 if (!serviceAccountKeyString) {
-  throw new Error(
+  console.error(
     "Service account key not set. Please set the GOOGLE_SERVICE_ACCOUNT_KEY or GOOGLE_SERVICE_ACCOUNT_KEY_PATH environment variable.",
   );
+  Deno.exit(1);
 }
 
 const serviceAccountKey = JSON.parse(
   serviceAccountKeyString,
 ) as GoogleServiceAccountKey;
-
-export const loadCredentials = (): GoogleCredentials => {
-  // Minimal stub to satisfy existing call sites; we always use service account
-  const json: GoogleCredentials = {
-    web: {
-      client_id: "",
-      project_id: serviceAccountKey.project_id || "",
-      auth_uri: "https://accounts.google.com/o/oauth2/auth",
-      token_uri: "https://oauth2.googleapis.com/token",
-      auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-      client_secret: "",
-      redirect_uris: [],
-      javascript_origins: [],
-    },
-  };
-  return json;
-};
 
 // Create an OAuth2 client with the given credentials
 export const authorize = async (): Promise<GoogleAuthObject> => {
@@ -95,12 +54,11 @@ export const authorize = async (): Promise<GoogleAuthObject> => {
     "https://www.googleapis.com/auth/drive.appdata",
     "https://www.googleapis.com/auth/drive.activity.readonly",
   ];
-  const jwtClient = new google.auth.JWT(
-    serviceAccountKey.client_email || "",
-    undefined,
-    serviceAccountKey.private_key || "",
-    scopes,
-  );
+  const jwtClient = new google.auth.JWT({
+    email: serviceAccountKey.client_email,
+    key: serviceAccountKey.private_key,
+    scopes: scopes,
+  });
   await jwtClient.authorize();
   return jwtClient;
 };
