@@ -7,6 +7,7 @@ const Footer = ({ googleDocId, sitemap, websiteTitle, websiteIcon }) => {
       pages: [],
       icon: websiteIcon && websiteIcon.src,
       title: "Home",
+      href: "/",
     },
   };
   for (const path in sitemap) {

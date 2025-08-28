@@ -1,7 +1,7 @@
 import { CSS, render } from "@deno/gfm";
 import { SitemapEntry } from "./lib/publishing.ts";
 import { join } from "jsr:@std/path";
-import { processMarkdown } from "./lib/markdown.ts";
+import { FooterItem, processMarkdown } from "./lib/markdown.ts";
 
 // Load environment variables
 const DEFAULT_HOST = Deno.env.get("DEFAULT_HOST") || "localhost";
@@ -100,13 +100,13 @@ function createErrorPage(title: string, message: string): string {
 
 // Remove OAuth flow in favor of service account only
 
-type SitemapRecord = Record<
-  string,
-  { title?: string; href?: string; redirect?: string; hidden?: boolean }
->;
+type FooterItems = Record<string, FooterItem>;
 
-function generateFooterFromSitemap(sitemap: SitemapRecord): string {
-  if (!sitemap || Object.keys(sitemap).length === 0) {
+function generateFooter(
+  sitemap: Record<string, SitemapEntry>,
+  footerItems: FooterItems,
+): string {
+  if (!footerItems || Object.keys(footerItems).length === 0) {
     return "";
   }
 
@@ -115,8 +115,8 @@ function generateFooterFromSitemap(sitemap: SitemapRecord): string {
     Home: [],
   };
 
-  for (const path in sitemap) {
-    const page = sitemap[path];
+  for (const path in footerItems) {
+    const page = footerItems[path];
     if (page.hidden) continue;
 
     const pathParts = path.split("/").filter(Boolean);
@@ -126,7 +126,7 @@ function generateFooterFromSitemap(sitemap: SitemapRecord): string {
     if (pathParts.length === 1) {
       // Root level pages go to Home section
       if (pathParts[0] !== "index") {
-        const href = page.redirect || page.href || `/${pathParts[0]}`;
+        const href = page.redirect || page.path || page.href;
         sections["Home"].push({
           title: page.title || pathParts[0],
           href: href,
@@ -139,13 +139,20 @@ function generateFooterFromSitemap(sitemap: SitemapRecord): string {
         sections[sectionName] = [];
       }
 
-      const href = page.redirect || page.href || path;
+      const href = page.redirect || path || page.href;
       sections[sectionName].push({
         title: page.title || pathParts[pathParts.length - 1],
         href: href,
       });
     }
   }
+  console.log(">>> footerItems", footerItems);
+  sections["Contribute"] = [
+    {
+      title: "Edit this page",
+      href: sitemap["/index"]?.src || "",
+    },
+  ];
 
   // Filter out empty sections
   const nonEmptySections = Object.entries(sections).filter(
@@ -160,12 +167,15 @@ function generateFooterFromSitemap(sitemap: SitemapRecord): string {
   let footerHtml = `
     <footer class="footer bg-gray-900 dark:bg-black text-gray-300 dark:text-gray-400 py-12 px-6 md:px-12 lg:px-24 w-full">
       <div class="container max-w-[1200px] mx-auto">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">`;
+        <div class="flex flex-wrap justify-around gap-8 w-full">`;
 
   for (const [sectionName, pages] of nonEmptySections) {
     footerHtml += `
-          <div class="footer-section">
-            <h2 class="text-lg font-semibold text-white dark:text-gray-100 mb-4 capitalize">${sectionName}</h2>
+          <div class="footer-section min-w-48">
+            <h2 class="text-lg font-semibold text-white dark:text-gray-100 mb-4 capitalize">
+            ${
+      sectionName === "Home" ? `<a href="/">Home</a>` : sectionName
+    }</h2>
             <ul class="space-y-2">
               ${
       pages
@@ -196,7 +206,7 @@ async function serveMarkdown(
   slug: string,
 ): Promise<Response> {
   try {
-    const { markdown, pageInfo, footerSitemap } = await processMarkdown(
+    const { markdown, pageInfo, sitemap, footerItems } = await processMarkdown(
       markdownText,
       {
         host,
@@ -208,7 +218,7 @@ async function serveMarkdown(
     const body = render(markdown);
 
     // Generate footer from sitemap
-    const footer = generateFooterFromSitemap(footerSitemap);
+    const footer = generateFooter(sitemap, footerItems);
 
     const html = `
 <!DOCTYPE html>
@@ -267,9 +277,12 @@ async function generateRSSFeed(host: string): Promise<Response> {
     const entries = Object.entries(sitemap)
       .map(([path, entry]) => ({
         ...(entry as SitemapEntry),
-        slug: path.startsWith("/") ? path.slice(1) : path,
+        path: path,
       }))
-      .filter((entry) => entry.customDate || entry.ptime) // Only include entries with ptime
+      .filter(
+        (entry) =>
+          entry.path.startsWith("/blog/") && (entry.customDate || entry.ptime),
+      ) // Only include entries with ptime
       .sort((a, b) => {
         const dateA = a.customDate ?? a.ptime;
         const dateB = b.customDate ?? b.ptime;
@@ -282,8 +295,7 @@ async function generateRSSFeed(host: string): Promise<Response> {
       entries.map(async (entry) => {
         try {
           // Read the markdown file for this entry
-          const markdownPath = join(DATA_DIR, host, entry.slug + ".md");
-          console.log(">>> markdownPath", markdownPath);
+          const markdownPath = join(DATA_DIR, host, entry.path + ".md");
           const markdown = await Deno.readTextFile(markdownPath);
 
           // Convert markdown to HTML for the description
@@ -300,14 +312,14 @@ async function generateRSSFeed(host: string): Promise<Response> {
           return {
             ...entry,
             fullContent: cleanHtml,
-            title: entry.title || entry.slug,
+            title: entry.title || entry.path.split("/").pop(),
           };
         } catch (error) {
           console.warn(`Could not read content for ${entry.slug}:`, error);
           return {
             ...entry,
             fullContent: "",
-            title: entry.title || entry.slug,
+            title: entry.title || entry.path.split("/").pop(),
           };
         }
       }),

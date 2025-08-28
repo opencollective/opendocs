@@ -5,7 +5,7 @@
     "dev": "deno run --allow-env --env-file=.env --allow-read --allow-net --watch src/server.ts",
     "test": "TZ=utc deno test --allow-env --allow-read --allow-write --allow-net --allow-run --env-file=.env.test",
     "build": "deno task build:css:prod",
-    "build:css": "deno run --allow-env --allow-read --allow-write --allow-run src/scripts/build.ts --watch",
+    "build:css:dev": "deno run --allow-sys --allow-env --allow-read --allow-write --allow-run src/scripts/build.ts --watch",
     "build:css:prod": "deno run --allow-env --allow-read --allow-write --allow-run --allow-ffi --allow-sys src/scripts/build.ts --prod",
     "compile": "deno run --allow-env --allow-read --allow-write --allow-net --allow-run src/scripts/compile.ts",
     "compile:sync": "deno run --allow-env --allow-read --allow-write --allow-net --allow-run src/scripts/compile.ts --sync",

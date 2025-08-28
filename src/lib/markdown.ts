@@ -137,23 +137,34 @@ type PathInfo = {
  * /path, url (for redirects)
  * @returns sitemap
  */
-export function extractFooterSitemap(markdown: string) {
-  const sitemap: Record<string, PathInfo> = {};
+
+export type FooterItem = {
+  title: string;
+  href: string;
+  path: string;
+  hidden: boolean;
+  redirect?: string;
+  src?: string;
+};
+
+export function extractFooterSitemap(
+  markdown: string,
+): Record<string, FooterItem> {
+  const sitemap: Record<string, FooterItem> = {};
 
   const lines = markdown.split("\n");
   for (let line of lines) {
-    const pathInfo: PathInfo = {
+    const FooterItem: FooterItem = {
       path: "",
       title: "",
       href: "",
-      googleDocId: undefined,
       redirect: undefined,
       hidden: false,
     };
     line = line.trim();
     if (line.match(/^\(.*\)$/)) {
       line = line.substring(1, line.length - 1);
-      pathInfo.hidden = true;
+      FooterItem.hidden = true;
     } else {
       if (line.substring(0, 1) != "/") {
         continue;
@@ -164,33 +175,34 @@ export function extractFooterSitemap(markdown: string) {
 
     if (parts && parts.length === 1) continue;
 
-    pathInfo.path = parts[0].toLowerCase();
+    FooterItem.path = parts[0].toLowerCase();
 
     if (parts.length === 2) {
-      pathInfo.href = parts[1];
+      FooterItem.href = parts[1];
     }
 
     if (parts.length === 3) {
-      pathInfo.title = parts[1];
-      pathInfo.href = parts[2];
+      FooterItem.title = parts[1];
+      FooterItem.href = parts[2];
     }
 
-    const matches = pathInfo.href.match(/^\[(.*)\]\((.*)\)$/);
+    const matches = FooterItem.href.match(/^\[(.*)\]\((.*)\)$/);
     if (matches) {
-      pathInfo.title = pathInfo.title || matches[1];
-      pathInfo.href = matches[2];
+      FooterItem.title = FooterItem.title || matches[1];
+      FooterItem.href = matches[2];
     }
-    const googleDocId = getGoogleDocId(pathInfo.href);
+    const googleDocId = getGoogleDocId(FooterItem.href);
     if (googleDocId) {
-      pathInfo.googleDocId = googleDocId;
+      FooterItem.src = `https://docs.google.com/document/d/${googleDocId}/edit`;
+    } else {
+      if (
+        FooterItem.href.match(/^https?:\/\//) ||
+        FooterItem.href.match(/^mailto:/)
+      ) {
+        FooterItem.redirect = FooterItem.href;
+      }
     }
-    if (
-      pathInfo.href.match(/^https?:\/\//) ||
-      pathInfo.href.match(/^mailto:/)
-    ) {
-      pathInfo.redirect = pathInfo.href;
-    }
-    sitemap[pathInfo.path] = pathInfo;
+    sitemap[FooterItem.path] = FooterItem;
   }
   return sitemap;
 }
@@ -205,7 +217,8 @@ export async function processMarkdown(
 ): Promise<{
   markdown: string;
   pageInfo: SitemapEntry;
-  footerSitemap: Record<string, PathInfo>;
+  sitemap: Record<string, SitemapEntry>;
+  footerItems: Record<string, FooterItem>;
 }> {
   const _sitemap = sitemap ||
     (JSON.parse(
@@ -247,5 +260,10 @@ export async function processMarkdown(
     }
   }
 
-  return { markdown: newMarkdown, pageInfo, footerSitemap };
+  return {
+    markdown: newMarkdown,
+    pageInfo,
+    sitemap: _sitemap,
+    footerItems: footerSitemap,
+  };
 }
