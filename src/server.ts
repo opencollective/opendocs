@@ -132,7 +132,6 @@ function generateFooter(
   path: string = "/index",
 ): string {
   if (!footerItems || Object.keys(footerItems).length === 0) {
-    console.log(">>> no footerItems", path, footerItems);
     return "";
   }
 
@@ -240,7 +239,18 @@ async function serveMarkdown(
     );
 
     // Convert markdown to HTML using the markdown library
-    const body = render(markdown);
+    const body = render(markdown, {
+      allowIframes: true,
+      allowedTags: ["iframe", "div"],
+      allowedAttributes: {
+        iframe: ["src", "frameborder", "allowfullscreen", "style"],
+        div: ["style"],
+      },
+    });
+
+    console.log(">>> markdown", markdown);
+
+    console.log(">>> body", body);
 
     const cachedFooterItems = getFromCache<FooterItems>(
       host,
@@ -331,6 +341,12 @@ async function generateRSSFeed(host: string): Promise<Response> {
           // Convert markdown to HTML for the description
           const htmlContent = render(markdown, {
             baseUrl: `https://${host}`,
+            allowIframes: true,
+            allowedTags: ["iframe", "div"],
+            allowedAttributes: {
+              iframe: ["src", "frameborder", "allowfullscreen", "style"],
+              div: ["style"],
+            },
           });
 
           // Clean up HTML for RSS (remove script tags, etc.)

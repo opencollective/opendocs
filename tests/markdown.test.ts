@@ -4,6 +4,7 @@ import {
   processMarkdown,
 } from "../src/lib/markdown.ts";
 import { SitemapEntry } from "../src/lib/publishing.ts";
+import { youtube } from "../src/embeds/youtube.ts";
 
 Deno.test("Extract images from markdown", async () => {
   Deno.copyFileSync(
@@ -79,4 +80,19 @@ Deno.test("Process markdown", async () => {
   expect(newMarkdown).toBeDefined();
   expect(pageInfo).toBeDefined();
   expect(footerItems).toBeDefined();
+});
+
+Deno.test("Process markdown - published", async () => {
+  const markdown = await Deno.readTextFile("./tests/fixtures/embeds.md");
+  const { markdown: newMarkdown } = await processMarkdown(markdown, {
+    host: "xavierdamman.com",
+    path: "/index",
+    sitemap: JSON.parse(
+      await Deno.readTextFile(`./tests/fixtures/sitemap.json`),
+    ) as Record<string, SitemapEntry>,
+  });
+
+  expect(newMarkdown).toContain(youtube("UxLgJeUQS74").replace(/\s\s+/g, " "));
+  expect(newMarkdown).toContain(youtube("HihvuESciME").replace(/\s\s+/g, " "));
+  expect(newMarkdown).toContain(youtube("Puro_L7O4eY").replace(/\s\s+/g, " "));
 });

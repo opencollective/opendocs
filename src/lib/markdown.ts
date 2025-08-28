@@ -3,6 +3,7 @@ import { dirname, join, relative } from "jsr:@std/path";
 import { parse } from "npm:chrono-node";
 import { SitemapEntry } from "./publishing.ts";
 import { getGoogleDocId } from "./googledoc.ts";
+import { youtube } from "../embeds/youtube.ts";
 
 const DATA_DIR = Deno.env.get("DATA_DIR") || "./dist";
 
@@ -249,6 +250,14 @@ export async function processMarkdown(
   );
   let footerSitemap: Record<string, PathInfo> = {};
 
+  newMarkdown = newMarkdown // Youtube embeds
+    .replace(
+      /\[https?:\/\/(www\.)?(youtu.be\/|youtube.com\/(embed\/|watch\?v=))([\\a-z0-9_-]{11,12})[^\]]*\]\(https?:\/\/(www\.)?(youtu.be\/|youtube.com\/(embed\/|watch\?v=))([a-z0-9_-]{11})[^\)]*\)/gi,
+      (_match, _p1, _p2, _p3, p4, _p5, _p6) =>
+        `\n\n${youtube(p4.replace(/\\/g, "")).replace(/\s\s+/g, " ")}\n`,
+    );
+
+  // Extract footer from markdown
   if (newMarkdown.match(/^\-\-\-$/gm)) {
     const parts = newMarkdown.split(/^\-\-\-$/gm);
     if (parts.length > 1) {
