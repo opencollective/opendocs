@@ -282,7 +282,7 @@ async function generateRSSFeed(host: string): Promise<Response> {
       entries.map(async (entry) => {
         try {
           // Read the markdown file for this entry
-          const markdownPath = join(DATA_DIR, host, entry.slug, ".md");
+          const markdownPath = join(DATA_DIR, host, entry.slug + ".md");
           console.log(">>> markdownPath", markdownPath);
           const markdown = await Deno.readTextFile(markdownPath);
 
