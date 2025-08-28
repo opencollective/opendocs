@@ -11,7 +11,7 @@ const DATA_DIR = Deno.env.get("DATA_DIR") || "./dist";
 
 export type SitemapEntry = {
   googleDocId: string;
-  slug: string;
+  path: string;
   src: string;
   ctime: Date;
   mtime: Date;
@@ -56,9 +56,10 @@ export const publishDocsInFolder = async (
       const res = await downloadGoogleDoc(auth, docMetadata, folderPath);
       console.log(res);
       if (res && res.slug) {
-        sitemap[`/${folderPath}/${res.slug}` as urlpath] = {
+        const path = `/${folderPath}/${res.slug}` as urlpath;
+        sitemap[path] = {
           googleDocId: docMetadata.id,
-          slug: res.slug,
+          path,
           src: docMetadata.src,
           ctime: docMetadata.ctime,
           mtime: docMetadata.mtime,

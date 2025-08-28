@@ -33,7 +33,7 @@ Deno.test("Extract images from markdown", async () => {
   expect(originalMarkdownFileSize).toBeGreaterThan(updatedMarkdownFileSize);
   console.log({ date: res.date, markdown: res.markdown.length, images });
   expect(res.date).toBeDefined();
-  expect(res.date?.toISOString()).toBe("2017-01-30T11:00:00.000Z");
+  expect(res.date?.toISOString()).toBe("2017-01-30T12:00:00.000Z");
 });
 
 Deno.test("Process markdown", async () => {
@@ -41,42 +41,42 @@ Deno.test("Process markdown", async () => {
   const {
     markdown: newMarkdown,
     pageInfo,
-    footerSitemap,
+    footerItems,
   } = await processMarkdown(markdown, {
     host: "xavierdamman.com",
-    slug: "index",
+    path: "/index",
     sitemap: JSON.parse(
       await Deno.readTextFile(`./tests/fixtures/sitemap.json`),
     ) as Record<string, SitemapEntry>,
   });
-  expect(footerSitemap["/socials/twitter"]).toBeDefined();
-  expect(footerSitemap["/socials/twitter"].title).toBe("Twitter");
-  expect(footerSitemap["/socials/twitter"].href).toBe("https://x.com/xdamman");
-  expect(footerSitemap["/twitter"].redirect).toBe("https://x.com/xdamman");
-  expect(footerSitemap["/twitter"].hidden).toBeTruthy();
-  expect(footerSitemap["/blog/2017/from-firms-to-collectives"]).toBeDefined();
-  expect(footerSitemap["/blog/2017/from-firms-to-collectives"].title).toBe(
+  expect(footerItems["/socials/twitter"]).toBeDefined();
+  expect(footerItems["/socials/twitter"].title).toBe("Twitter");
+  expect(footerItems["/socials/twitter"].href).toBe("https://x.com/xdamman");
+  expect(footerItems["/twitter"].redirect).toBe("https://x.com/xdamman");
+  expect(footerItems["/twitter"].hidden).toBeTruthy();
+  expect(footerItems["/blog/2017/from-firms-to-collectives"]).toBeDefined();
+  expect(footerItems["/blog/2017/from-firms-to-collectives"].title).toBe(
     "From Firms to Collectives",
   );
-  expect(footerSitemap["/blog/2017/from-firms-to-collectives"].href).toBe(
+  expect(footerItems["/blog/2017/from-firms-to-collectives"].href).toBe(
     "/blog/2017/from-firms-to-collectives",
   );
   expect(
-    footerSitemap["/blog/2017/from-firms-to-collectives"].redirect,
+    footerItems["/blog/2017/from-firms-to-collectives"].redirect,
   ).toBeUndefined();
   expect(
-    footerSitemap["/blog/2017/from-firms-to-collectives"].hidden,
+    footerItems["/blog/2017/from-firms-to-collectives"].hidden,
   ).toBeTruthy();
 
-  expect(footerSitemap["/projects/citizengarden"].hidden).toBeFalsy();
-  expect(footerSitemap["/projects/citizengarden"].redirect).toBe(
+  expect(footerItems["/projects/citizengarden"].hidden).toBeFalsy();
+  expect(footerItems["/projects/citizengarden"].redirect).toBe(
     "https://citizenspring.earth/citizengarden",
   );
-  expect(footerSitemap["/about"].hidden).toBeFalsy();
-  expect(footerSitemap["/about"].redirect).toBeUndefined();
-  expect(footerSitemap["/about"].href).toBe("/about");
+  expect(footerItems["/about"].hidden).toBeFalsy();
+  expect(footerItems["/about"].redirect).toBeUndefined();
+  expect(footerItems["/about"].href).toBe("/about");
 
   expect(newMarkdown).toBeDefined();
   expect(pageInfo).toBeDefined();
-  expect(footerSitemap).toBeDefined();
+  expect(footerItems).toBeDefined();
 });

@@ -211,9 +211,9 @@ export async function processMarkdown(
   markdown: string,
   {
     host,
-    slug,
+    path,
     sitemap,
-  }: { host: string; slug: string; sitemap?: Record<string, SitemapEntry> },
+  }: { host: string; path: string; sitemap?: Record<string, SitemapEntry> },
 ): Promise<{
   markdown: string;
   pageInfo: SitemapEntry;
@@ -227,12 +227,10 @@ export async function processMarkdown(
   const sitemapEntryByGoogleDocId: Record<string, SitemapEntry> = {};
   Object.keys(_sitemap).forEach((key) => {
     sitemapEntryByGoogleDocId[_sitemap[key].googleDocId] = _sitemap[key];
-    sitemapEntryByGoogleDocId[_sitemap[key].googleDocId].slug = key.substring(
-      1,
-    );
+    sitemapEntryByGoogleDocId[_sitemap[key].googleDocId].path = key;
   });
 
-  const pageInfo = _sitemap[`/${slug}`];
+  const pageInfo = _sitemap[path];
 
   // Replace all occurences of [.*](https://docs.google.com/document/d/1nB_HlbaST2TBYyinxZLKcz0dwjGLi0uKkeKhLxeEpw8/edit?tab=t.0#heading=h.d0xroirb1ubp) with [.*](slug) if googleDocId is part of the sitemap
   let newMarkdown = markdown.replace(
@@ -241,7 +239,7 @@ export async function processMarkdown(
       if (googleDocId) {
         const sitemapEntry = sitemapEntryByGoogleDocId[googleDocId];
         if (sitemapEntry) {
-          return `[${anchor}](/${sitemapEntry.slug})`;
+          return `[${anchor}](${sitemapEntry.path})`;
         } else {
           console.log(">>> no sitemapEntry for", googleDocId, match);
         }

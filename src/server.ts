@@ -9,34 +9,58 @@ const DATA_DIR = Deno.env.get("DATA_DIR") || "./dist";
 console.log(">>> DEFAULT_HOST", DEFAULT_HOST);
 interface RequestContext {
   host: string;
-  slug: string;
-  filepath: string;
+  path: string;
 }
+
+type CachableTypes = string | FooterItems | Array<string>;
+const cache: Record<string, Record<string, CachableTypes>> = {};
+
+const getFromCache = <CachableTypes>(
+  host: string,
+  key: keyof (typeof cache)[string],
+  fn: () => CachableTypes,
+): CachableTypes => {
+  if (!cache[host]) {
+    cache[host] = {};
+  }
+  if (cache[host][key]) {
+    return cache[host][key] as CachableTypes;
+  }
+  const value = fn();
+  if (typeof value === "string" && value.length > 0) {
+    cache[host][key] = value;
+  }
+  if (Array.isArray(value) && value.length > 0) {
+    cache[host][key] = value;
+  }
+  if (
+    typeof value === "object" &&
+    value !== null &&
+    Object.keys(value).length > 0
+  ) {
+    cache[host][key] = value as FooterItems;
+  }
+  return value;
+};
 
 function parseRequest(url: URL): RequestContext {
   const host = url.hostname === "localhost" ? DEFAULT_HOST : url.hostname;
   const pathname = url.pathname;
 
   // Extract slug from pathname, default to "index"
-  let slug = pathname.slice(1) || "index";
+  let path = pathname || "/index";
 
   // Remove trailing slash
-  if (slug.endsWith("/")) {
-    slug = slug.slice(0, -1);
+  if (path.endsWith("/")) {
+    path = path.slice(0, -1);
   }
 
-  // If slug is empty, use "index"
-  if (!slug) {
-    slug = "index";
+  // If path is empty, use "/index"
+  if (!path) {
+    path = "/index";
   }
 
-  let filepath = join(DATA_DIR, host, slug);
-  // If there is no extension, default to .md
-  if (!slug.match(/\.[^.]+$/)) {
-    filepath += ".md";
-  }
-
-  return { host, slug, filepath };
+  return { host, path };
 }
 
 function createErrorPage(title: string, message: string): string {
@@ -105,8 +129,10 @@ type FooterItems = Record<string, FooterItem>;
 function generateFooter(
   sitemap: Record<string, SitemapEntry>,
   footerItems: FooterItems,
+  path: string = "/index",
 ): string {
   if (!footerItems || Object.keys(footerItems).length === 0) {
+    console.log(">>> no footerItems", path, footerItems);
     return "";
   }
 
@@ -146,11 +172,10 @@ function generateFooter(
       });
     }
   }
-  console.log(">>> footerItems", footerItems);
   sections["Contribute"] = [
     {
       title: "Edit this page",
-      href: sitemap["/index"]?.src || "",
+      href: sitemap[path]?.src || "",
     },
   ];
 
@@ -203,22 +228,27 @@ function generateFooter(
 async function serveMarkdown(
   markdownText: string,
   host: string,
-  slug: string,
+  path: string,
 ): Promise<Response> {
   try {
     const { markdown, pageInfo, sitemap, footerItems } = await processMarkdown(
       markdownText,
       {
         host,
-        slug,
+        path,
       },
     );
 
     // Convert markdown to HTML using the markdown library
     const body = render(markdown);
 
+    const cachedFooterItems = getFromCache<FooterItems>(
+      host,
+      "footerItems",
+      () => footerItems,
+    );
     // Generate footer from sitemap
-    const footer = generateFooter(sitemap, footerItems);
+    const footer = generateFooter(sitemap, cachedFooterItems, path);
 
     const html = `
 <!DOCTYPE html>
@@ -227,7 +257,7 @@ async function serveMarkdown(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${pageInfo.title}</title>
-    <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/feed.xml" />
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/rss.xml" />
     <link rel="stylesheet" href="/output.css" />
     <style>
     ${CSS}
@@ -315,7 +345,7 @@ async function generateRSSFeed(host: string): Promise<Response> {
             title: entry.title || entry.path.split("/").pop(),
           };
         } catch (error) {
-          console.warn(`Could not read content for ${entry.slug}:`, error);
+          console.warn(`Could not read content for ${entry.path}:`, error);
           return {
             ...entry,
             fullContent: "",
@@ -333,15 +363,15 @@ async function generateRSSFeed(host: string): Promise<Response> {
     <description>RSS feed for ${host}</description>
     <language>en</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
-    <atom:link href="https://${host}/feed.xml" rel="self" type="application/rss+xml"/>
+    <atom:link href="https://${host}/rss.xml" rel="self" type="application/rss+xml"/>
     ${
       processedEntries
         .map(
           (entry) => `
     <item>
       <title>${entry.title}</title>
-      <link>https://${host}/${entry.slug}</link>
-      <guid>https://${host}/${entry.slug}</guid>
+      <link>https://${host}${entry.path}</link>
+      <guid>https://${host}${entry.path}</guid>
       <pubDate>${
             new Date(
               entry.customDate ?? entry.ptime ?? new Date(),
@@ -379,7 +409,7 @@ async function handler(req: Request): Promise<Response> {
   }
 
   // Handle RSS feed requests
-  if (url.pathname === "/feed.xml") {
+  if (url.pathname === "/rss.xml") {
     const host = url.hostname === "localhost" ? DEFAULT_HOST : url.hostname;
     return await generateRSSFeed(host);
   }
@@ -407,7 +437,12 @@ async function handler(req: Request): Promise<Response> {
     return new Response("OK", { status: 200 });
   }
 
-  const { host, slug, filepath } = parseRequest(url);
+  const { host, path } = parseRequest(url);
+  let filepath = join(DATA_DIR, host, path);
+  // If there is no extension, default to .md
+  if (!path.match(/\.[^.]+$/)) {
+    filepath += ".md";
+  }
 
   // Check for static files in DATA_DIR directory first
   const staticFilePath = filepath;
@@ -420,7 +455,7 @@ async function handler(req: Request): Promise<Response> {
       if (contentType === "text/markdown") {
         // convert fileContent to string
         const fileTextContent = new TextDecoder().decode(fileContent);
-        return await serveMarkdown(fileTextContent, host, slug);
+        return await serveMarkdown(fileTextContent, host, path);
       }
       return new Response(fileContent, {
         headers: { "Content-Type": contentType },
@@ -433,7 +468,7 @@ async function handler(req: Request): Promise<Response> {
         // Host exists but file doesn't - show file not found error
         const errorHtml = createErrorPage(
           "Page Not Found",
-          `The page "${slug}" was not found on ${host}.`,
+          `The page "${path}" was not found on ${host}.`,
         );
         return new Response(errorHtml, {
           status: 404,
