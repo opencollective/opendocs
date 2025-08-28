@@ -1,7 +1,7 @@
 {
   "tasks": {
     "sync": "deno run --allow-env --allow-read --allow-write --allow-net --allow-run --env-file=.env src/sync.ts",
-    "start": "deno run --allow-env --allow-read --allow-net src/server.ts",
+    "start": "deno task build && deno run --allow-env --allow-read --allow-net src/server.ts",
     "dev": "deno run --allow-env --env-file=.env --allow-read --allow-net --watch src/server.ts",
     "test": "TZ=utc deno test --allow-env --allow-read --allow-write --allow-net --allow-run --env-file=.env.test",
     "build": "deno task build:css:prod",

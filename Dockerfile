@@ -13,8 +13,4 @@ WORKDIR /app
 # Copy your project files
 COPY . .
 
-# Run build tasks to generate css prod file
-ENV DATA_DIR=${DATA_DIR}
-RUN deno task build
-
 CMD ["deno", "task", "start"]
