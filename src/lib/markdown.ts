@@ -1,6 +1,6 @@
 // import { Buffer } from "node:buffer";
 import { dirname, join, relative } from "jsr:@std/path";
-import { parse } from "npm:chrono-node";
+import * as chrono from "npm:chrono-node";
 import { SitemapEntry } from "./publishing.ts";
 import { getGoogleDocId } from "./googledoc.ts";
 import { youtube } from "../embeds/youtube.ts";
@@ -28,12 +28,16 @@ function base64ToUint8Array(base64: string): Uint8Array {
  * - 18 Aug 2025
  * @returns Date object or null
  */
-export function extractDateText(text: string) {
-  const parsed = parse(text);
-  if (parsed.length > 0) {
-    return parsed[0].date();
-  }
-  return null;
+export function extractDateText(markdown: string) {
+  const text = markdown.split("\n").slice(0, 5).join("\n");
+  const results = chrono.strict.parse(text);
+  const full = results.find(
+    (r) =>
+      r.start?.isCertain("day") &&
+      r.start?.isCertain("month") &&
+      r.start?.isCertain("year"),
+  );
+  return full ? full.date() : null;
 }
 
 export async function extractImagesFromMarkdown(
@@ -45,9 +49,7 @@ export async function extractImagesFromMarkdown(
   const markdownContent = await Deno.readTextFile(markdownFile);
 
   // Extract date from first few lines
-  const date = extractDateText(
-    markdownContent.split("\n").slice(0, 5).join("\n"),
-  );
+  const date = extractDateText(markdownContent);
 
   //  [image1]: <data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAloAAAFRCAYAAACsdAO0AACAAElEQVR4XmzcBXgV1/rw7dNzTilWnACBCDHiQtzd3d3d3QghCcHiJISQBEhwdylWSg1qVKlAC3XqUFooUOz3PXtz3r9875vrWtfsPXtm9sia9dzPmrXzj039q9g62M6OoS52jvSxa9M6Xjl9jNfPnmR1+0pGBteydnUXh/fv4aWTx9k1soG+lkZWVhbRXlFAX105/YsqWF1XRk9tKV3yvm1RNWtWtdLfsYr2ZS1kpyTi4WCDrbEBOrNmoD1hHGbTJmM/dzre+ur4GWhKUSPUSp/
   const imageRegex =

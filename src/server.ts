@@ -330,6 +330,8 @@ async function generateRSSFeed(host: string): Promise<Response> {
         return new Date(dateB).getTime() - new Date(dateA).getTime();
       });
 
+    console.log(entries);
+
     // Process entries to include full content
     const processedEntries = await Promise.all(
       entries.map(async (entry) => {
@@ -390,7 +392,7 @@ async function generateRSSFeed(host: string): Promise<Response> {
       <guid>https://${host}${entry.path}</guid>
       <pubDate>${
             new Date(
-              entry.customDate ?? entry.ptime ?? new Date(),
+              entry.customDate || entry.ptime || entry.ctime || new Date(),
             ).toUTCString()
           }</pubDate>
       <description><![CDATA[${entry.fullContent}]]></description>

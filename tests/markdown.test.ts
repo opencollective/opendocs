@@ -1,5 +1,6 @@
 import { expect } from "jsr:@std/expect/expect";
 import {
+  extractDateText,
   extractImagesFromMarkdown,
   processMarkdown,
 } from "../src/lib/markdown.ts";
@@ -95,4 +96,38 @@ Deno.test("Process markdown - published", async () => {
   expect(newMarkdown).toContain(youtube("UxLgJeUQS74").replace(/\s\s+/g, " "));
   expect(newMarkdown).toContain(youtube("HihvuESciME").replace(/\s\s+/g, " "));
   expect(newMarkdown).toContain(youtube("Puro_L7O4eY").replace(/\s\s+/g, " "));
+});
+
+Deno.test("Extract date from markdown", () => {
+  const markdown = `# Hello world
+  This document was published on 2025-01-30`;
+  const date = extractDateText(markdown);
+  expect(date).toBeDefined();
+  expect(date?.toISOString()).toBe("2025-01-30T12:00:00.000Z");
+});
+
+Deno.test("Extract first date from markdown", () => {
+  const markdown = `# Hello world
+  This document was published on April 30 2024 and not on March 1 2021`;
+  const date = extractDateText(markdown);
+  expect(date).toBeDefined();
+  expect(date?.toISOString()).toBe("2024-04-30T12:00:00.000Z");
+});
+
+Deno.test("Extract date from markdown", () => {
+  const markdown = `# Update Spring 2025
+
+Dear investors,
+`;
+  const date = extractDateText(markdown);
+  expect(date).toBeNull();
+});
+
+Deno.test("Extract date from markdown", () => {
+  const markdown = `# Starting your own local currency, lessons from the Eusko
+
+Ever since [the movie Demain](https://en.wikipedia.org/wiki/Tomorrow_\(2015_film\)) (“Tomorrow”) came out in 2015, we’ve seen an explosion of local currencies in Europe. They enable citizens to support their local economy. When using a local currency, you create a natural barrier that incentivizes people to consume locally. If I give you a euro, you can go 
+`;
+  const date = extractDateText(markdown);
+  expect(date).toBeNull();
 });
