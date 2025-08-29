@@ -35,7 +35,10 @@ export function extractDateText(markdown: string) {
     (r) =>
       r.start?.isCertain("day") &&
       r.start?.isCertain("month") &&
-      r.start?.isCertain("year"),
+      r.start?.isCertain("year") &&
+      !(r.start as { _tags?: Set<string> } | undefined)?._tags?.has(
+        "result/relativeDate",
+      ),
   );
   return full ? full.date() : null;
 }

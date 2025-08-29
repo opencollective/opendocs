@@ -319,18 +319,13 @@ async function generateRSSFeed(host: string): Promise<Response> {
         ...(entry as SitemapEntry),
         path: path,
       }))
-      .filter(
-        (entry) =>
-          entry.path.startsWith("/blog/") && (entry.customDate || entry.ptime),
-      ) // Only include entries with ptime
+      .filter((entry) => entry.path.startsWith("/blog/") && entry.ptime) // Only include entries with ptime (published)
       .sort((a, b) => {
-        const dateA = a.customDate ?? a.ptime;
-        const dateB = b.customDate ?? b.ptime;
+        const dateA = a.customDate || a.ptime;
+        const dateB = b.customDate || b.ptime;
         if (!dateA || !dateB) return 0;
         return new Date(dateB).getTime() - new Date(dateA).getTime();
       });
-
-    console.log(entries);
 
     // Process entries to include full content
     const processedEntries = await Promise.all(

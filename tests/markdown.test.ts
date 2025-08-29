@@ -131,3 +131,13 @@ Ever since [the movie Demain](https://en.wikipedia.org/wiki/Tomorrow_\(2015_film
   const date = extractDateText(markdown);
   expect(date).toBeNull();
 });
+Deno.test("Extract date from markdown", () => {
+  const markdown = `# On why a single currency destroys local communities
+
+During our Solarpunk Roadtrip across Europe, we stopped by Panicale, a beautiful small medieval town in the heart of Umbria, Perugia, Italy.  
+![image1](./images/on-why-a-single-currency-destroys-local-communities_image1.png)  
+The town has about 5,600 inhabitants, but only about 600 live in the old town (intra muros). As we were walking down the streets (you can pretty much go through all of them in an hour), we stumbled upon a celebration happening in the local church. You could feel the strong community feel of the town. A third of the village must have been there. It was beautiful to see.  
+`;
+  const date = extractDateText(markdown);
+  expect(date).toBeNull();
+});
