@@ -340,7 +340,7 @@ async function generateRSSFeed(host: string): Promise<Response> {
 
           // Convert markdown to HTML for the description
           const htmlContent = render(markdown, {
-            baseUrl: `https://${host}`,
+            baseUrl: `https://${host}${entry.path}`,
             allowIframes: true,
             allowedTags: ["iframe", "div"],
             allowedAttributes: {
