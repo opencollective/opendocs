@@ -248,10 +248,6 @@ async function serveMarkdown(
       },
     });
 
-    console.log(">>> markdown", markdown);
-
-    console.log(">>> body", body);
-
     const cachedFooterItems = getFromCache<FooterItems>(
       host,
       "footerItems",

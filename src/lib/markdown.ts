@@ -4,6 +4,7 @@ import * as chrono from "npm:chrono-node";
 import { SitemapEntry } from "./publishing.ts";
 import { getGoogleDocId } from "./googledoc.ts";
 import { youtube } from "../embeds/youtube.ts";
+import { linkedin } from "../embeds/linkedin.ts";
 
 const DATA_DIR = Deno.env.get("DATA_DIR") || "./dist";
 
@@ -259,7 +260,14 @@ export async function processMarkdown(
     .replace(
       /\[https?:\/\/(www\.)?(youtu.be\/|youtube.com\/(embed\/|watch\?v=))([\\a-z0-9_-]{11,12})[^\]]*\]\(https?:\/\/(www\.)?(youtu.be\/|youtube.com\/(embed\/|watch\?v=))([a-z0-9_-]{11})[^\)]*\)/gi,
       (_match, _p1, _p2, _p3, p4, _p5, _p6) =>
-        `\n\n${youtube(p4.replace(/\\/g, "")).replace(/\s\s+/g, " ")}\n`,
+        `\n\n${
+          youtube(p4.replace(/\\/g, "")).replace(/\s\s+/g, " ")
+        }\n<br />\n`,
+    )
+    .replace(
+      /\[https?:\/\/(www\.)?linkedin\.com\/feed\/update\/(urn:li:activity:[0-9]{10,20})\/?\]\(https?:\/\/(www\.)?linkedin\.com\/feed\/update\/urn:li:activity:[0-9]{10,20}\/?\)/gi,
+      (_match, _p1, p2, _p3, _p4, _p5, _p6) =>
+        `\n\n${linkedin(p2).replace(/\s\s+/g, " ")}\n\n`,
     );
 
   // Extract footer from markdown
