@@ -1,6 +1,6 @@
 // import { Buffer } from "node:buffer";
-import { dirname, join, relative } from "jsr:@std/path";
-import * as chrono from "npm:chrono-node";
+import { dirname, join, relative } from "@std/path";
+import * as chrono from "chrono-node";
 import { SitemapEntry } from "./publishing.ts";
 import { getGoogleDocId } from "./googledoc.ts";
 import { youtube } from "../embeds/youtube.ts";

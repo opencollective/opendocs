@@ -4,7 +4,7 @@ import {
   getPublicKey,
   nip19,
   SimplePool,
-} from "npm:nostr-tools";
+} from "nostr-tools";
 
 const DRY_RUN = Deno.env.get("DRY_RUN") === "true";
 

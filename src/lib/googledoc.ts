@@ -1,8 +1,8 @@
-import { join } from "jsr:@std/path";
+import { join } from "@std/path";
 import { getGoogleDocContent, GoogleAuthObject } from "./googleapi.ts";
 import { extractImagesFromMarkdown } from "./markdown.ts";
 import { writeFileWithMetadata } from "./utils.ts";
-import slugify from "npm:slugify";
+import slugify from "slugify";
 
 // Define a proper type for auth instead of any
 type Auth = {

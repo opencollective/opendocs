@@ -16,7 +16,10 @@
     "@deno/gfm": "jsr:@deno/gfm@^0.11.0",
     "@std/path": "jsr:@std/path",
     "@std/expect": "jsr:@std/expect",
+    "chrono-node": "npm:chrono-node@^2.8.4",
     "googleapis": "npm:googleapis",
+    "nostr-tools": "npm:nostr-tools@^2.17.0",
+    "slugify": "npm:slugify@^1.6.6",
     "tailwindcss": "npm:tailwindcss@^3.4.0"
   },
   "fmt": {

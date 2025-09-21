@@ -1,4 +1,4 @@
-import { dirname, join } from "jsr:@std/path";
+import { dirname, join } from "@std/path";
 import { getGoogleDocId } from "./googledoc.ts";
 import { SitemapEntry } from "./publishing.ts";
 

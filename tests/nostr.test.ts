@@ -31,18 +31,13 @@ Deno.test("publishMarkdown", async () => {
         nostr?.uploadFile(join("./tests/fixtures", imagePath)) ||
         Promise.resolve(null),
     );
-    console.log("newMarkdown", newMarkdown);
     const res = await nostr?.publishMarkdown("story-with-an-image", {
       title: "Story with an image",
       content: newMarkdown,
       published_at: new Date(),
       tags: [],
     });
-    // expect(images).toBeDefined();
-    // expect(images.length).toBe(1);
-    // expect(images[0]).toBe(
-    //   "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
-    // );
+    expect(res).toBeDefined();
   } finally {
     // Clean up WebSocket connections and timers to prevent leaks
     await Nostr.closeAndReset();

@@ -1,4 +1,4 @@
-import { expect } from "jsr:@std/expect/expect";
+import { expect } from "@std/expect/expect";
 import { getLatestActivities } from "../src/lib/googleapi.ts";
 import { authorize } from "../src/lib/googleapi.ts";
 

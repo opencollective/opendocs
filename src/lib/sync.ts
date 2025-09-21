@@ -3,7 +3,7 @@ import {
   getLatestActivities,
   listSharedFolders,
 } from "./googleapi.ts";
-import { join } from "jsr:@std/path";
+import { join } from "@std/path";
 import { publishDocsInFolder, SitemapEntry } from "./publishing.ts";
 import { updateSitemapForHost } from "./utils.ts";
 
