@@ -254,7 +254,6 @@ async function serveMarkdown(
       const pages = getPagesInPath(path, sitemap, {
         filter: (entry) => (entry.ptime ? true : false),
       });
-      console.log(">>> pages", pages);
       pages.forEach((page) => {
         indexMarkdown += `[${page.title}](${page.path}), ${
           formatDate(
@@ -296,7 +295,12 @@ async function serveMarkdown(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${pageInfo.title}</title>
-    <meta name="description" content="${pageInfo.description}">
+    <meta name="description" content="${
+      pageInfo.description.replace(
+        /"/g,
+        '"',
+      )
+    }">
     <meta name="og:image" content="${thumbnail}">
     <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/rss.xml" />
     <link rel="stylesheet" href="/output.css" />
