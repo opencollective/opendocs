@@ -264,7 +264,7 @@ async function serveMarkdown(
     }
 
     // Convert markdown to HTML using the markdown library
-    const body = render([markdown, indexMarkdown].join("\n\n"), {
+    const body = render(markdown, {
       allowIframes: true,
       allowedTags: ["iframe", "div"],
       allowedAttributes: {
@@ -298,7 +298,7 @@ async function serveMarkdown(
     <meta name="description" content="${
       pageInfo.description.replace(
         /"/g,
-        '"',
+        "'",
       )
     }">
     <meta name="og:image" content="${thumbnail}">
