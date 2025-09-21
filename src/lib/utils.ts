@@ -149,6 +149,7 @@ export function updateSitemapForHost(
 
   try {
     // Write the sitemap to the file
+    console.log(">>> writing sitemap to", sitemapPath);
     Deno.writeTextFileSync(sitemapPath, JSON.stringify(sitemap, null, 2));
   } catch (error) {
     console.error(">>> error writing sitemap", error);

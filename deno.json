@@ -3,6 +3,7 @@
     "sync": "deno run --allow-env --allow-read --allow-write --allow-net --allow-run --env-file=.env src/sync.ts",
     "start": "deno task build && deno run --allow-env --allow-read --allow-net src/server.ts",
     "dev": "deno run --allow-env --env-file=.env --allow-read --allow-net --watch src/server.ts",
+    "register-webhook": "deno run --allow-env --env-file=.env --allow-read --allow-net src/register-webhook.ts",
     "test": "TZ=utc deno test --allow-env --allow-read --allow-write --allow-net --allow-run --env-file=.env.test",
     "build": "deno task build:css:prod",
     "build:css:dev": "deno run --allow-sys --allow-env --allow-read --allow-write --allow-run src/scripts/build.ts --watch",
@@ -13,6 +14,8 @@
   },
   "imports": {
     "@deno/gfm": "jsr:@deno/gfm@^0.11.0",
+    "@std/path": "jsr:@std/path",
+    "@std/expect": "jsr:@std/expect",
     "googleapis": "npm:googleapis",
     "tailwindcss": "npm:tailwindcss@^3.4.0"
   },

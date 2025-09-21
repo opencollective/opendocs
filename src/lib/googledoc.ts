@@ -27,9 +27,13 @@ export type GoogleDocMetadata = {
 export type DownloadedGoogleDoc = {
   googleDocId: string;
   title: string;
+  description: string;
+  markdown: string;
+  tags: string[][];
   slug: string;
   date: Date | null;
   files: string[];
+  images: string[];
 };
 
 export async function downloadGoogleDoc(
@@ -93,7 +97,6 @@ export async function downloadGoogleDoc(
   );
   downloadedFiles.push(markdownFile);
   const res = await extractImagesFromMarkdown(markdownFile, slug, images);
-  downloadedFiles.push(...res.images);
   const pdfFile = await downloadFormat(
     auth,
     googleDocId,
@@ -103,10 +106,14 @@ export async function downloadGoogleDoc(
   downloadedFiles.push(pdfFile);
   const downloadedGoogleDoc = {
     googleDocId,
-    title: name,
+    title: res.title || name,
+    description: res.description || "",
+    markdown: res.markdown,
     date: res.date,
     slug,
+    tags: res.tags,
     files: downloadedFiles,
+    images: res.images,
   };
   return downloadedGoogleDoc;
 }

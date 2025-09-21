@@ -4,7 +4,7 @@ import {
   listGoogleDocs,
   listSharedFolders,
 } from "../src/lib/googleapi.ts";
-import { expect } from "jsr:@std/expect/expect";
+import { expect } from "@std/expect/expect";
 const publishedGoogleDocId = "1EYqqbQVkkPRjiDccN59LeXDH9LhksiUe3vNX8C-Y2DI";
 const unpublishedGoogleDocId = "1CqMQHal9ayNMt57wNDN3yTwY_aRIEe3V57kD7y0OL7Y";
 const testDriveFolder = "10aieWT-xqTe2GEJb3Tg2Z0ebkQBVZ8v-";
@@ -23,8 +23,7 @@ Deno.test("list documents in drive folder", async () => {
   const auth = await authorize();
 
   const docs = await listGoogleDocs(auth, testDriveFolder);
-  console.log(docs);
-  expect(docs.length).toBe(3);
+  expect(docs.length).toBe(4);
   const unpublishedDoc = docs.find((doc) => doc.id === unpublishedGoogleDocId);
   const publishedDoc = docs.find((doc) => doc.id === publishedGoogleDocId);
   const index = docs.find((doc) => doc.name === "index");
@@ -44,7 +43,7 @@ Deno.test("download document", async () => {
     "./tests/output/published.md",
     "markdown",
   );
-  console.log(data);
+  expect(data).toBeDefined();
 });
 
 Deno.test("download", async () => {
@@ -53,10 +52,10 @@ Deno.test("download", async () => {
   const doc = docs.find((doc) => doc.id === publishedGoogleDocId);
   expect(doc).toBeDefined();
   const res = await downloadGoogleDoc(auth, doc!, "./tests/output");
-  console.log(res);
   expect(res?.date).toBeDefined();
   expect(res?.date?.toISOString()).toBe("2017-01-30T12:00:00.000Z");
-  expect(res?.files.length).toBe(3);
+  expect(res?.files.length).toBe(2);
+  expect(res?.images.length).toBe(1);
   expect(res?.title).toBe("From Firms to Collectives");
   expect(res?.slug).toBe("from-firms-to-collectives");
 });
@@ -67,9 +66,9 @@ Deno.test("download index", async () => {
   const doc = docs.find((doc) => doc.name === "index");
   expect(doc).toBeDefined();
   const res = await downloadGoogleDoc(auth, doc!, "./tests/output");
-  console.log(res);
   expect(res?.date).toBeNull();
   expect(res?.files.length).toBe(2);
-  expect(res?.title).toBe("index");
+  expect(res?.images.length).toBe(1);
+  expect(res?.title).toBe("Homepage");
   expect(res?.slug).toBe("index");
 });

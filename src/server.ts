@@ -1,7 +1,9 @@
 import { CSS, render } from "@deno/gfm";
 import { SitemapEntry } from "./lib/publishing.ts";
-import { join } from "jsr:@std/path";
+import { join } from "@std/path";
 import { FooterItem, processMarkdown } from "./lib/markdown.ts";
+import { authorize, watchDriveChanges } from "./lib/googleapi.ts";
+import { syncAllSharedFolders } from "./lib/sync.ts";
 
 // Load environment variables
 const DEFAULT_HOST = Deno.env.get("DEFAULT_HOST") || "localhost";
@@ -224,6 +226,15 @@ function generateFooter(
   return footerHtml;
 }
 
+const formatDate = (date: Date | undefined): string => {
+  if (!date) return "";
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
+
 async function serveMarkdown(
   markdownText: string,
   host: string,
@@ -238,8 +249,23 @@ async function serveMarkdown(
       },
     );
 
+    let indexMarkdown = "";
+    if (path.match("index")) {
+      const pages = getPagesInPath(path, sitemap, {
+        filter: (entry) => (entry.ptime ? true : false),
+      });
+      console.log(">>> pages", pages);
+      pages.forEach((page) => {
+        indexMarkdown += `[${page.title}](${page.path}), ${
+          formatDate(
+            new Date(page.customDate || page.ptime || new Date()),
+          )
+        }\n\n`;
+      });
+    }
+
     // Convert markdown to HTML using the markdown library
-    const body = render(markdown, {
+    const body = render([markdown, indexMarkdown].join("\n\n"), {
       allowIframes: true,
       allowedTags: ["iframe", "div"],
       allowedAttributes: {
@@ -253,9 +279,16 @@ async function serveMarkdown(
       "footerItems",
       () => footerItems,
     );
+
     // Generate footer from sitemap
     const footer = generateFooter(sitemap, cachedFooterItems, path);
-
+    const thumbnail = pageInfo.images.length > 0
+      ? `https://${host}${
+        pageInfo.images[0].substring(
+          pageInfo.images[0].indexOf(host) + host.length,
+        )
+      }`
+      : pageInfo.thumbnail.replace("=s220", "=s660");
     const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -263,6 +296,8 @@ async function serveMarkdown(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${pageInfo.title}</title>
+    <meta name="description" content="${pageInfo.description}">
+    <meta name="og:image" content="${thumbnail}">
     <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/rss.xml" />
     <link rel="stylesheet" href="/output.css" />
     <style>
@@ -271,13 +306,15 @@ async function serveMarkdown(
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
             line-height: 1.6; 
         }
-        
+
         .markdown-body {
             padding: 2rem; 
+            max-width: 800px;
+            margin: 0 auto;
         }
     </style>
 </head>
-<body>
+<body class="dark:bg-black">
 <div
   data-color-mode="auto"
   data-light-theme="light"
@@ -303,25 +340,40 @@ async function serveMarkdown(
   }
 }
 
-async function generateRSSFeed(host: string): Promise<Response> {
-  try {
-    const sitemap = JSON.parse(
-      await Deno.readTextFile(join(DATA_DIR, host, "sitemap.json")),
-    );
+type options = {
+  limit?: number;
+  offset?: number;
+  filter?: (entry: SitemapEntry) => boolean;
+};
+function getPagesInPath(
+  path: string,
+  sitemap: Record<string, SitemapEntry>,
+  { limit = 10, offset = 0, filter }: options,
+): SitemapEntry[] {
+  return Object.entries(sitemap)
+    .filter(([p, entry]) => p.startsWith(path) && filter ? filter(entry) : true)
+    .map(([p, entry]) => ({
+      ...(entry as SitemapEntry),
+      path: p,
+    }))
+    .sort((a, b) => {
+      const dateA = a.customDate || a.ptime;
+      const dateB = b.customDate || b.ptime;
+      if (!dateA || !dateB) return 0;
+      return new Date(dateB).getTime() - new Date(dateA).getTime();
+    })
+    .slice(offset, offset + limit);
+}
 
+async function generateRSSFeed(
+  host: string,
+  sitemap: Record<string, SitemapEntry>,
+): Promise<Response> {
+  try {
     // Convert sitemap to array and sort by customDate orptime (newest first)
-    const entries = Object.entries(sitemap)
-      .map(([path, entry]) => ({
-        ...(entry as SitemapEntry),
-        path: path,
-      }))
-      .filter((entry) => entry.path.startsWith("/blog/") && entry.ptime) // Only include entries with ptime (published)
-      .sort((a, b) => {
-        const dateA = a.customDate || a.ptime;
-        const dateB = b.customDate || b.ptime;
-        if (!dateA || !dateB) return 0;
-        return new Date(dateB).getTime() - new Date(dateA).getTime();
-      });
+    const entries = getPagesInPath("/blog/", sitemap, {
+      filter: (entry) => Boolean(entry.ptime),
+    }); // Only include entries with ptime (published)
 
     // Process entries to include full content
     const processedEntries = await Promise.all(
@@ -407,20 +459,66 @@ async function generateRSSFeed(host: string): Promise<Response> {
   }
 }
 
+try {
+  const auth = await authorize();
+  console.log("Watching drive changes");
+  await watchDriveChanges(auth);
+} catch (error) {
+  const errorResponse = error as {
+    response: { data: { error: { code: number } } };
+  };
+  if (errorResponse?.response?.data?.error?.code === 400) {
+    console.log("Watch already exists");
+  } else {
+    console.error(
+      "Error watching drive changes:",
+      JSON.stringify(errorResponse?.response?.data?.error, null, 2),
+    );
+  }
+}
+
+const lastSync = new Date();
+
 async function handler(req: Request): Promise<Response> {
   const url = new URL(req.url);
 
-  // If missing service account key, display helpful error for all routes except favicon
+  if (url.pathname === "/webhook") {
+    console.log("Webhook received");
+
+    const now = new Date();
+
+    const headers = req.headers;
+    // Extract Google Drive webhook headers
+    const resourceId = headers.get("x-goog-resource-id");
+
+    if (!resourceId) {
+      console.log("Missing required headers, skipping sync", headers);
+      return new Response("Missing required header", { status: 400 });
+    }
+
+    if (now.getTime() - lastSync.getTime() < 1000 * 60) {
+      console.log("Last sync was less than 1 minute ago, skipping sync");
+      return new Response("OK", { status: 200 });
+    }
+
+    await syncAllSharedFolders();
+
+    return new Response("OK", { status: 200 });
+  }
 
   // Handle favicon and other common requests
   if (url.pathname === "/favicon.ico") {
     return new Response(null, { status: 204 });
   }
 
+  const host = url.hostname === "localhost" ? DEFAULT_HOST : url.hostname;
+  const sitemap = JSON.parse(
+    await Deno.readTextFile(join(DATA_DIR, host, "sitemap.json")),
+  );
+
   // Handle RSS feed requests
   if (url.pathname === "/rss.xml") {
-    const host = url.hostname === "localhost" ? DEFAULT_HOST : url.hostname;
-    return await generateRSSFeed(host);
+    return await generateRSSFeed(host, sitemap);
   }
 
   // Handle CSS requests
@@ -446,8 +544,17 @@ async function handler(req: Request): Promise<Response> {
     return new Response("OK", { status: 200 });
   }
 
-  const { host, path } = parseRequest(url);
+  const { path } = parseRequest(url);
   let filepath = join(DATA_DIR, host, path);
+
+  if (path.endsWith("/edit")) {
+    // Redirect to the google doc edit page
+    const sitemapEntry = sitemap[path.replace("/edit", "") || "/index"];
+    return Response.redirect(
+      `https://docs.google.com/document/d/${sitemapEntry.googleDocId}/edit`,
+    );
+  }
+
   // If there is no extension, default to .md
   if (!path.match(/\.[^.]+$/)) {
     filepath += ".md";

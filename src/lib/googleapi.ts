@@ -63,6 +63,41 @@ export const authorize = async (): Promise<GoogleAuthObject> => {
   return jwtClient;
 };
 
+export const watchDriveChanges = async (auth: GoogleAuthObject) => {
+  const drive = google.drive({ version: "v3", auth });
+  const res = await drive.changes.watch({
+    includeItemsFromAllDrives: true,
+    supportsAllDrives: true,
+    pageToken: "token",
+    includePermissionsForView: "published",
+    requestBody: {
+      id: "webhook2",
+      type: "web_hook",
+      payload: true,
+      address: `${Deno.env.get("BASE_URL")}/webhook`,
+    },
+  });
+  console.log("Watch changes:", res.data);
+};
+export const watchFileChanges = async (
+  auth: GoogleAuthObject,
+  fileId: string,
+) => {
+  const drive = google.drive({ version: "v3", auth });
+  const res = await drive.files.watch({
+    fileId: fileId,
+    supportsAllDrives: true,
+    includePermissionsForView: "published",
+    requestBody: {
+      id: "webhook4",
+      type: "web_hook",
+      payload: true,
+      address: "https://f6e2d1eace39.ngrok-free.app/webhook",
+    },
+  });
+  console.log("Watch changes:", res.data);
+};
+
 // Function to get metadata of a specific file
 export const getFileMetadata = async (
   auth: GoogleAuthObject,
@@ -81,6 +116,41 @@ export const getFileMetadata = async (
   } catch (error) {
     console.error("Error fetching file metadata:", error);
   }
+};
+
+function isDate(date: Date): date is Date {
+  return date instanceof Date;
+}
+
+type GoogleDriveQueryParams = {
+  pageSize?: number;
+  supportsAllDrives?: boolean;
+  includeItemsFromAllDrives?: boolean;
+  orderBy?: string;
+  fields?: string;
+  q?: string;
+  pageToken?: string;
+};
+
+export const listLatestFiles = async (
+  auth: GoogleAuthObject,
+  since: Date,
+  limit: number = 10,
+) => {
+  const drive = google.drive({ version: "v3", auth });
+  const params: GoogleDriveQueryParams = {
+    pageSize: limit,
+    supportsAllDrives: true,
+    includeItemsFromAllDrives: true,
+    orderBy: "modifiedTime desc",
+    fields:
+      "nextPageToken, files(id, name, description, version, mimeType, createdTime, modifiedTime, shared, thumbnailLink, iconLink, lastModifyingUser)",
+  };
+  if (since && isDate(since)) {
+    params.q = `modifiedTime > '${since.toISOString()}'`;
+  }
+  const res = await drive.files.list(params);
+  console.log("Latest files:", res.data);
 };
 
 // List files in a specific Google Drive folder
@@ -184,6 +254,7 @@ export type GoogleDocMetadata = {
   id: string;
   src: string; // source url
   name: string;
+  thumbnail: string; // thumbnail url
   ctime: Date; // created time
   mtime: Date; // modified time
   ptime?: Date; // published time (if published)
@@ -203,7 +274,7 @@ export async function listGoogleDocs(
     const response = await driveService.files.list({
       q: `'${folderId}' in parents and mimeType='application/vnd.google-apps.document'`,
       fields:
-        "nextPageToken, files(id, webViewLink, name, createdTime, modifiedTime, permissions, owners)",
+        "nextPageToken, files(id, webViewLink, name, createdTime, modifiedTime, permissions, owners, thumbnailLink)",
       supportsAllDrives: true,
       includeItemsFromAllDrives: true,
     });
@@ -221,6 +292,7 @@ export async function listGoogleDocs(
             id: file.id as string,
             src: file.webViewLink as string,
             name: file.name as string,
+            thumbnail: file.thumbnailLink as string,
             ctime: new Date(file.createdTime as string),
             mtime: new Date(file.modifiedTime as string),
             ptime: publishedTime,
@@ -367,5 +439,35 @@ export async function getLatestActivities(
     return output;
   } catch (error) {
     console.error("Error fetching activities: ", error);
+  }
+}
+
+export async function getAllDriveActivities(
+  auth: GoogleAuthObject,
+  limit: number = 10,
+): Promise<DriveActivity[] | undefined> {
+  const activityService = google.driveactivity({ version: "v2", auth });
+  const output: DriveActivity[] = [];
+
+  try {
+    const response = await activityService.activity.query({
+      requestBody: {
+        pageSize: limit,
+        consolidationStrategy: {
+          none: {},
+        },
+        // No ancestorName = all drives
+      },
+    });
+    console.log("All drive activities:", response.data);
+    const activities = response.data.activities;
+    if (activities && activities.length) {
+      activities.forEach((activity: DriveActivity) => {
+        output.push(activity);
+      });
+    }
+    return output;
+  } catch (error) {
+    console.error("Error fetching all drive activities: ", error);
   }
 }

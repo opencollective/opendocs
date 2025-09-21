@@ -44,6 +44,111 @@ export function extractDateText(markdown: string) {
   return full ? full.date() : null;
 }
 
+/**
+ * Extract hashtags and combo tags from markdown
+ * E.g. #interview #videos #year:2025 #type:video #[project:Commons Hub Brussels]
+ * Excludes hashtags that are part of markdown links [text](url#anchor)
+ * @param markdown
+ */
+export function extractTags(markdown: string): string[][] {
+  // Remove markdown links to avoid matching hashtags in URLs
+  const markdownWithoutLinks = markdown.replace(
+    /\[([^\]]*)\]\([^)]*\)/g,
+    "[$1]",
+  );
+
+  const hashtagRegex = /#(?:\[(\w+:[^\]]+)\]|(\w+:(?:[^\s#]+)?|\w+))/g;
+  const matches = markdownWithoutLinks.match(hashtagRegex) || [];
+  return matches.map((match) => {
+    if (match.startsWith("#[")) {
+      return [
+        match.substring(2, match.indexOf(":")),
+        match.substring(match.indexOf(":") + 1, match.length - 1),
+      ];
+    } else if (match.includes(":")) {
+      return [
+        match.substring(1, match.indexOf(":")),
+        match.substring(match.indexOf(":") + 1),
+      ];
+    } else {
+      return ["t", match.substring(1)];
+    }
+  });
+}
+
+export function removeLinks(markdown: string) {
+  return markdown.replace(/(\[.*?\])\(.*?\)/g, "$1");
+}
+
+export function extractDescription(markdown: string) {
+  const lines = markdown.split("\n");
+  for (const line of lines) {
+    if (line.length < 20) {
+      continue;
+    }
+    if (line.startsWith("#")) {
+      continue;
+    }
+    const results = chrono.strict.parse(line);
+    if (results.length > 0) {
+      continue;
+    }
+    return removeLinks(line.trim());
+  }
+  return null;
+}
+
+export async function processReferencedImages(
+  markdown: string,
+  processor: (imagePath: string) => Promise<string | null>,
+) {
+  console.log("Processing referenced images", markdown);
+  const imageRegex = /\[[^\]]*\]\(([^\)]+)\)/gm;
+
+  // Find all matches first
+  const matches = Array.from(markdown.matchAll(imageRegex));
+
+  // Process all images in parallel
+  const processedImages = await Promise.all(
+    matches.map(async (match) => {
+      const imagePath = match[1];
+      console.log("Processing image", imagePath);
+      const processedPath = await processor(imagePath);
+      if (!processedPath) {
+        console.error("Failed to process image", imagePath);
+        return { original: match[1], processed: imagePath };
+      }
+      return { original: match[1], processed: processedPath };
+    }),
+  );
+
+  // Replace all matches
+  let result = markdown;
+  for (const { original, processed } of processedImages) {
+    result = result.replace(`](${original})`, `](${processed})`);
+  }
+
+  return result;
+}
+
+export function extractTitle(markdown: string) {
+  const lines = markdown.split("\n");
+  for (const line of lines) {
+    if (line.match(/^# /)) {
+      return line.substring(2);
+    }
+  }
+  return null;
+}
+
+/**
+ * Extract url encoded images from markdown and save them as separate files
+ * @param markdownFile
+ * @param prefix
+ * @param images
+ * @param images - map of image alt text to url
+ * @returns
+ */
 export async function extractImagesFromMarkdown(
   markdownFile: string,
   prefix: string,
@@ -54,6 +159,11 @@ export async function extractImagesFromMarkdown(
 
   // Extract date from first few lines
   const date = extractDateText(markdownContent);
+
+  const title = extractTitle(markdownContent);
+
+  const description = extractDescription(markdownContent);
+  const tags = extractTags(markdownContent);
 
   //  [image1]: <data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAloAAAFRCAYAAACsdAO0AACAAElEQVR4XmzcBXgV1/rw7dNzTilWnACBCDHiQtzd3d3d3QghCcHiJISQBEhwdylWSg1qVKlAC3XqUFooUOz3PXtz3r9875vrWtfsPXtm9sia9dzPmrXzj039q9g62M6OoS52jvSxa9M6Xjl9jNfPnmR1+0pGBteydnUXh/fv4aWTx9k1soG+lkZWVhbRXlFAX105/YsqWF1XRk9tKV3yvm1RNWtWtdLfsYr2ZS1kpyTi4WCDrbEBOrNmoD1hHGbTJmM/dzre+ur4GWhKUSPUSp/
   const imageRegex =
@@ -123,6 +233,9 @@ export async function extractImagesFromMarkdown(
   return {
     markdown: updatedMarkdown,
     images: imagePaths,
+    title,
+    description,
+    tags,
     date,
   };
 }
