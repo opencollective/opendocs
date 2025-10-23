@@ -554,9 +554,13 @@ async function handler(req: Request): Promise<Response> {
   if (path.endsWith("/edit")) {
     // Redirect to the google doc edit page
     const sitemapEntry = sitemap[path.replace("/edit", "") || "/index"];
-    return Response.redirect(
-      `https://docs.google.com/document/d/${sitemapEntry.googleDocId}/edit`,
-    );
+    if (sitemapEntry?.googleDocId) {
+      return Response.redirect(
+        `https://docs.google.com/document/d/${sitemapEntry.googleDocId}/edit`,
+      );
+    } else {
+      return new Response("Google doc not found", { status: 404 });
+    }
   }
 
   // If there is no extension, default to .md

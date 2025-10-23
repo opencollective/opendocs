@@ -360,8 +360,6 @@ export async function processMarkdown(
         const sitemapEntry = sitemapEntryByGoogleDocId[googleDocId];
         if (sitemapEntry) {
           return `[${anchor}](${sitemapEntry.path})`;
-        } else {
-          console.log(">>> no sitemapEntry for", googleDocId, match);
         }
       }
       return match;
