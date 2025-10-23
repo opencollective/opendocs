@@ -515,6 +515,11 @@ async function handler(req: Request): Promise<Response> {
     return new Response(null, { status: 204 });
   }
 
+  if (url.pathname === "/refresh") {
+    syncAllSharedFolders();
+    return new Response("Refreshing in progress...", { status: 200 });
+  }
+
   const host = url.hostname === "localhost" ? DEFAULT_HOST : url.hostname;
   const sitemap = JSON.parse(
     await Deno.readTextFile(join(DATA_DIR, host, "sitemap.json")),
